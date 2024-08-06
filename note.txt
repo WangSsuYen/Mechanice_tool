@@ -1,0 +1,2 @@
+GUI rating : https://blog.udemy.com/python-gui/
+GUI learning : https://www.uxpython.com/
