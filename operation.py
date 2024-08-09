@@ -26,6 +26,16 @@ class ScrewThrustPanel(wx.Panel):
         self.AddLabeledTextCtrl(form_sizer, "導程角：", 'Deg')
         self.AddLabeledTextCtrl(form_sizer, "損失估算：", "%")
 
+        # 輸出欄位
+        self.output_form = wx.BoxSizer(wx.HORIZONTAL)
+        self.output_title = wx.StaticText(self, label='總輸出 : ', size=(50,20))
+        self.output_form.Add(self.output_title, 0, wx.ALIGN_CENTER | wx.ALL, 5)
+        self.output_box = wx.TextCtrl(self, size=(100,20))
+        self.output_form.Add(self.output_box, 0, wx.ALIGN_CENTER | wx.ALL, 5)
+        self.output_unit = wx.StaticText(self, label='N')
+        self.output_form.Add(self.output_unit,0 ,wx.ALIGN_CENTER, 5)
+        sizer.Add(self.output_form, 0, wx.ALIGN_CENTER | wx.Top , 30)
+
         # 設定按鈕圖案
         btn_icon = wx.Image("images/submit.png", wx.BITMAP_TYPE_PNG)
         btn_icon = btn_icon.Scale(80, 70, wx.IMAGE_QUALITY_HIGH)
@@ -33,7 +43,7 @@ class ScrewThrustPanel(wx.Panel):
         # 添加計算按鈕
         calc_button = wx.BitmapButton(self, bitmap=btn_bitmap)
         calc_button.SetBackgroundColour(wx.Colour(255,0,0))
-        sizer.Add(calc_button, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        sizer.Add(calc_button, 0, wx.ALIGN_CENTER | wx.TOP, 30)
 
 
     def AddLabeledTextCtrl(self, sizer, label, unit):
