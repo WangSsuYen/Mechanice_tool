@@ -1,65 +1,73 @@
 import wx
 
+class MechanicsCalculator(wx.Frame):
+    def __init__(self):
+        super().__init__(parent=None, title='力學計算機')
+        panel = wx.Panel(self)
 
-# 側邊細項
-class SideMenu(wx.Panel):
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.InitUI()
+        # Create main sizer
+        main_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
-    def InitUI(self):
-        self.size = wx.BoxSizer(wx.VERTICAL)
-        self.SetSizer(self.size)
-        self.SetBackgroundColour(wx.Colour(0, 255, 255))
+        # Left side - buttons
+        button_sizer = wx.BoxSizer(wx.VERTICAL)
+        buttons = ['力學計算機', '螺桿推力', '皮帶', '流體力學']
+        for label in buttons:
+            button = wx.Button(panel, label=label)
+            button_sizer.Add(button, 0, wx.ALL, 5)
 
-        self.menu_items_panel = wx.Panel(self)
-        self.menu_items_sizer = wx.BoxSizer(wx.VERTICAL)
-        self.menu_items_panel.SetSizer(self.menu_items_sizer)
+        # Right side - content
+        content_sizer = wx.BoxSizer(wx.VERTICAL)
 
-        self.size.Add(self.menu_items_panel, 1, wx.EXPAND | wx.ALL, 10)
+        # Title
+        title = wx.StaticText(panel, label="示範圖片")
+        content_sizer.Add(title, 0, wx.ALL | wx.ALIGN_CENTER, 5)
 
-        self.menu_item()
+        # Image placeholder
+        image_placeholder = wx.StaticText(panel, label="[圖片顯示區域]", style=wx.ALIGN_CENTER)
+        image_placeholder.SetMinSize((300, 200))
+        content_sizer.Add(image_placeholder, 0, wx.ALL | wx.EXPAND, 5)
 
-    # 力學細項
-    def menu_item(self):
-        # 添加菜單項目
-        self.formulas = ['螺桿推力', '皮帶', '流速流量計算', '斜角滾珠軸承', '滾針軸承']
-        for formula in self.formulas:
-            btn = wx.Button(self.menu_items_panel, label=formula)
-            btn.Bind(wx.EVT_BUTTON, self.on_formula_selected)
-            self.menu_items_sizer.Add(btn, 0, wx.EXPAND | wx.ALL, 5)
+        # Input fields
+        grid_sizer = wx.FlexGridSizer(5, 4, 10, 10)
 
-    def on_formula_selected(self, event):
-        # 在此處添加按鈕點擊事件處理程式碼
-        button = event.GetEventObject()
-        label = button.GetLabel()
-        wx.MessageBox(f'您選擇了: {label}', '信息', wx.OK | wx.ICON_INFORMATION)
+        labels = [
+            "馬達力矩:", "螺桿直徑:",
+            "螺桿導程:", "導程角:",
+            "損失估算:", "",
+            "流量:", "面積:",
+            "壓力:", "溫度:"
+        ]
+        units = ["N.M", "mm", "mm", "Deg", "%", "", "m3/hr", "m2", "Kg/cm2", "°C"]
 
+        for label, unit in zip(labels, units):
+            if label:
+                grid_sizer.Add(wx.StaticText(panel, label=label))
+                text_ctrl = wx.TextCtrl(panel)
+                grid_sizer.Add(text_ctrl)
+                grid_sizer.Add(wx.StaticText(panel, label=unit))
+                grid_sizer.AddSpacer(1)
+            else:
+                grid_sizer.AddSpacer(1)
+                grid_sizer.AddSpacer(1)
+                grid_sizer.AddSpacer(1)
+                grid_sizer.AddSpacer(1)
 
-# 主畫面
-class MainFrame(wx.Frame):
-    def __init__(self, *args, **kw):
-        super().__init__(*args, **kw)
-        self.InitUI()
+        content_sizer.Add(grid_sizer, 0, wx.ALL | wx.EXPAND, 5)
 
-    def InitUI(self):
-        self.panel = wx.Panel(self)
-        self.size = wx.BoxSizer(wx.HORIZONTAL)
-        self.panel.SetSizer(self.size)
+        # Calculate button
+        calc_button = wx.Button(panel, label="送出計算")
+        content_sizer.Add(calc_button, 0, wx.ALL | wx.ALIGN_CENTER, 5)
 
-        self.side_menu = SideMenu(self.panel)
-        self.main_content = wx.Panel(self.panel)
+        # Add sizers to main sizer
+        main_sizer.Add(button_sizer, 0, wx.ALL, 10)
+        main_sizer.Add(content_sizer, 1, wx.EXPAND | wx.ALL, 10)
 
-        self.size.Add(self.side_menu, 0, wx.EXPAND | wx.ALL, 5)
-        self.size.Add(self.main_content, 1, wx.EXPAND | wx.ALL, 5)
-
-        self.SetTitle('Yang Iron Mechanice Tools')
-        self.SetSize((800, 600))
+        panel.SetSizer(main_sizer)
+        self.SetSize((600, 400))
         self.Centre()
 
-
 if __name__ == '__main__':
-    app = wx.App(redirect=True, useBestVisual=True)
-    frame = MainFrame(None)
+    app = wx.App()
+    frame = MechanicsCalculator()
     frame.Show()
     app.MainLoop()

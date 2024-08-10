@@ -1,4 +1,4 @@
-import wx
+import wx, traceback
 from operation import ScrewThrustPanel, BeltPanel, FluidMechanicsPanel
 
 
@@ -13,21 +13,32 @@ class SideMenu(wx.Panel):
         # 背景、視窗大小設定
         self.SetBackgroundColour(wx.Colour(0, 255, 255))
         self.SetMinSize((200, 0))
+
         # 視窗管理器
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(self.sizer)
-        # 抬頭
-        self.title = wx.StaticText(self, label="力學計算機", size=(200,60))
-        self.title.SetForegroundColour(wx.Colour(255, 0, 0))
+
+        # 抬頭背景設定
+        self.titel_bgc = wx.Panel(self)
+        self.titel_bgc.SetBackgroundColour(wx.Colour(0, 0, 0))
+        self.sizer.Add(self.titel_bgc, 0, wx.ALIGN_CENTER | wx.ALL, 5)
+
+        # 抬頭的佈局管理器
+        self.title_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.titel_bgc.SetSizer(self.title_sizer)
+
+        # 抬頭設定
+        self.title = wx.StaticText(self.titel_bgc, label="力學計算機", size=(200,60))
+        self.title.SetForegroundColour(wx.Colour(255, 255, 255))
         font = wx.Font(25, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
         self.title.SetFont(font)
-        self.sizer.Add(self.title, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        self.title_sizer.Add(self.title, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALL, 5)
 
         self.formulas = ['螺桿推力', '皮帶', '流體力學']
         for formula in self.formulas:
             btn = wx.Button(self, label=formula)
             btn.Bind(wx.EVT_BUTTON, self.OnFormulaSelected)
-            self.sizer.Add(btn, 0, wx.EXPAND | wx.ALL, 5)
+            self.sizer.Add(btn, 0, wx.EXPAND | wx.ALL, 10)
 
     def OnFormulaSelected(self, event):
         button = event.GetEventObject()
@@ -71,7 +82,7 @@ class MainFrame(wx.Frame):
         self.fluid_mechanics_panel.Hide()
 
         self.SetTitle('Yang Iron Mechanice Tools')
-        self.SetSize((800, 600))
+        self.SetSize((1024, 768))
         self.Centre()
 
     def SwitchPanel(self, label):
@@ -91,7 +102,15 @@ class MainFrame(wx.Frame):
 
 
 if __name__ == '__main__':
-    app = wx.App(redirect=True, useBestVisual=True)
-    frame = MainFrame(None)
-    frame.Show()
-    app.MainLoop()
+    # app = wx.App(redirect=True, useBestVisual=True)
+    # frame = MainFrame(None)
+    # frame.Show()
+    # app.MainLoop()
+    try:
+        app = wx.App(False)
+        frame = MainFrame(None)
+        frame.Show()
+        app.MainLoop()
+    except Exception as e:
+        error_message = traceback.format_exc()
+        wx.MessageBox(f"程序出現異常:\n\n{error_message}", "錯誤", wx.OK | wx.ICON_ERROR)
