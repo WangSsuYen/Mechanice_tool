@@ -1,5 +1,5 @@
 import wx, traceback
-from operation import ScrewThrustPanel, BeltPanel, FluidMechanicsPanel
+from operation import ScrewThrustPanel, fiveV_BeltPanel, FluidMechanicsPanel
 
 
 # 側畫面
@@ -34,7 +34,7 @@ class SideMenu(wx.Panel):
         self.title.SetFont(font)
         self.title_sizer.Add(self.title, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALL, 5)
 
-        self.formulas = ['螺桿推力', '皮帶', '流體力學']
+        self.formulas = ['螺桿推力', '5V型皮帶', '流體力學']
         for formula in self.formulas:
             btn = wx.Button(self, label=formula)
             btn.Bind(wx.EVT_BUTTON, self.OnFormulaSelected)
@@ -68,32 +68,32 @@ class MainFrame(wx.Frame):
 
         # 選擇主頁類別
         self.screw_thrust_panel = ScrewThrustPanel(self.panel)
-        self.belt_panel = BeltPanel(self.panel)
+        self.fiveV_BeltPanel = fiveV_BeltPanel(self.panel)
         self.fluid_mechanics_panel = FluidMechanicsPanel(self.panel)
 
         # 類別匯入主頁
         self.main_sizer.Add(self.screw_thrust_panel, 1, wx.EXPAND | wx.ALL, 5)
-        self.main_sizer.Add(self.belt_panel, 1, wx.EXPAND | wx.ALL, 5)
+        self.main_sizer.Add(self.fiveV_BeltPanel, 1, wx.EXPAND | wx.ALL, 5)
         self.main_sizer.Add(self.fluid_mechanics_panel, 1, wx.EXPAND | wx.ALL, 5)
 
         # 其他類別隱藏
         self.screw_thrust_panel.Hide()
-        self.belt_panel.Hide()
+        self.fiveV_BeltPanel.Hide()
         self.fluid_mechanics_panel.Hide()
 
         self.SetTitle('Yang Iron Mechanice Tools')
-        self.SetSize((1024, 768))
+        self.SetSize((1600, 1024))
         self.Centre()
 
     def SwitchPanel(self, label):
         self.screw_thrust_panel.Hide()
-        self.belt_panel.Hide()
+        self.fiveV_BeltPanel.Hide()
         self.fluid_mechanics_panel.Hide()
 
         if label == '螺桿推力':
             self.screw_thrust_panel.Show()
-        elif label == '皮帶':
-            self.belt_panel.Show()
+        elif label == '5V型皮帶':
+            self.fiveV_BeltPanel.Show()
         elif label == '流體力學':
             self.fluid_mechanics_panel.Show()
 
@@ -102,10 +102,6 @@ class MainFrame(wx.Frame):
 
 
 if __name__ == '__main__':
-    # app = wx.App(redirect=True, useBestVisual=True)
-    # frame = MainFrame(None)
-    # frame.Show()
-    # app.MainLoop()
     try:
         app = wx.App(False)
         frame = MainFrame(None)
