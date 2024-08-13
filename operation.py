@@ -1,14 +1,7 @@
 import wx, math
 
-
-import wx
-import math
-
 # 螺桿推力計算
-import wx
-import math
-
-class ScrewThrustPanel(wx.Panel):
+class ScrewThrustPanel(wx.ScrolledWindow):
     def __init__(self, parent):
         super().__init__(parent)
         self.InitUI()
@@ -60,6 +53,10 @@ class ScrewThrustPanel(wx.Panel):
         calc_button.Bind(wx.EVT_BUTTON, self.expression)
         sizer.Add(calc_button, 0, wx.ALIGN_CENTER | wx.TOP, 30)
 
+        # 設置滾動區域
+        self.SetScrollbars(50, 50, 50, 50)  # 設置捲動條，(水平步長, 垂直步長, 水平範圍, 垂直範圍)
+        self.SetScrollRate(50, 50)  # 設置滾動速率
+
     # 欄位新增器
     def AddLabeledTextCtrl(self, sizer, label, unit):
         box = wx.BoxSizer(wx.HORIZONTAL)
@@ -100,7 +97,7 @@ class ScrewThrustPanel(wx.Panel):
 
 
 # 皮帶計算
-class fiveV_BeltPanel(wx.Panel):
+class fiveV_BeltPanel(wx.ScrolledWindow):
     def __init__(self, parent):
         super().__init__(parent)
         self.InitUI()
@@ -162,6 +159,10 @@ class fiveV_BeltPanel(wx.Panel):
 
         calc_button = wx.Button(self, label="送出計算")
         sizer.Add(calc_button, 0, wx.EXPAND | wx.ALL, 5)
+
+        # 設置滾動區域
+        self.SetScrollbars(50, 50, 50, 50)  # 設置捲動條，(水平步長, 垂直步長, 水平範圍, 垂直範圍)
+        self.SetScrollRate(20, 20)  # 設置滾動速率
 
     # 欄位新增器
     def AddLabeledTextCtrl(self, sizer, label, unit):

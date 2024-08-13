@@ -82,7 +82,7 @@ class MainFrame(wx.Frame):
         self.fluid_mechanics_panel.Hide()
 
         self.SetTitle('Yang Iron Mechanice Tools')
-        self.SetSize((1600, 1024))
+        self.Maximize(True)
         self.Centre()
 
     def SwitchPanel(self, label):
