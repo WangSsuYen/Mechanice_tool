@@ -151,14 +151,25 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         self.belt_diameter = self.AddLabeledTextCtrl(input_belt_setting, "馬達皮帶輪有效直徑 ： ", "mm")
         self.motor_speed = self.AddLabeledTextCtrl(input_belt_setting, "馬達轉速 ： ", "RPM")
         self.spindle_spped = self.AddLabeledTextCtrl(input_belt_setting, "主軸轉速 ： ", "RPM")
+        self.axes_distance = self.AddLabeledTextCtrl(input_belt_setting, "皮帶輪軸間距 : ", "mm")
+
 
 
         self.AddLabeledTextCtrl(input_belt_setting, "惰輪負荷補正系數：", "")
         self.AddLabeledTextCtrl(input_belt_setting, "電機功率：", "Kw")
         input_sizer.Add(input_belt_setting, 0 , wx.ALIGN_CENTER | wx.ALL, 15)
 
-        calc_button = wx.Button(self, label="送出計算")
-        sizer.Add(calc_button, 0, wx.EXPAND | wx.ALL, 5)
+
+        # 設定按鈕圖案
+        btn_icon = wx.Image("images/submit.png", wx.BITMAP_TYPE_PNG)
+        btn_icon = btn_icon.Scale(60, 60, wx.IMAGE_QUALITY_HIGH)
+        btn_bitmap = wx.Bitmap(btn_icon)
+
+        # 添加計算按鈕
+        calc_button = wx.BitmapButton(self, bitmap=btn_bitmap)
+        calc_button.SetBackgroundColour(wx.Colour(255, 0, 0))
+        # calc_button.Bind(wx.EVT_BUTTON, self.expression)
+        sizer.Add(calc_button, 0, wx.ALIGN_CENTER | wx.TOP, 30)
 
         # 設置滾動區域
         self.SetScrollbars(50, 50, 50, 50)  # 設置捲動條，(水平步長, 垂直步長, 水平範圍, 垂直範圍)
