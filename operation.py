@@ -39,8 +39,8 @@ class ScrewThrustPanel(wx.ScrolledWindow):
         # 設定輸出欄位
         output_form = wx.GridSizer(cols=2, vgap=30, hgap=30)
         sizer.Add(output_form, 0, wx.ALIGN_CENTER | wx.TOP, 30)
-        self.screw_degress = self.AddLabeledTextCtrl(output_form, "導程角：", "Deg")
-        self.total_power = self.AddLabeledTextCtrl(output_form, "總輸出：", "N")
+        self.screw_degress = self.AddLabeledTextCtrl(output_form, "導程角：", "Deg", readonly=True)
+        self.total_power = self.AddLabeledTextCtrl(output_form, "總輸出：", "N", readonly=True)
 
         # 設定按鈕圖案
         btn_icon = wx.Image("images/submit.png", wx.BITMAP_TYPE_PNG)
@@ -58,15 +58,17 @@ class ScrewThrustPanel(wx.ScrolledWindow):
         self.SetScrollRate(50, 50)  # 設置滾動速率
 
     # 欄位新增器
-    def AddLabeledTextCtrl(self, sizer, label, unit):
+    def AddLabeledTextCtrl(self, sizer, label, unit, readonly=False):
         box = wx.BoxSizer(wx.HORIZONTAL)
         # 抬頭
         lbl = wx.StaticText(self, label=label, size=(90, 20))
         font = wx.Font(12, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
         lbl.SetFont(font)
         box.Add(lbl, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
+        # 確認是否為唯獨
+        style = wx.TE_READONLY if readonly else 0
         # 輸入框
-        txt = wx.TextCtrl(self, size=(100, 20))
+        txt = wx.TextCtrl(self, size=(100, 20), style=style)
         box.Add(txt, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
         # 單位
         unit_lbl = wx.StaticText(self, label=unit)
@@ -107,57 +109,67 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(sizer)
 
-        # 主頁圖片
-        image = wx.Image('images/graph.png', wx.BITMAP_TYPE_PNG)
-        image = image.Scale(1200, 450, wx.IMAGE_QUALITY_HIGH)
-        bitmap = wx.StaticBitmap(self, -1, wx.Bitmap(image))
-        sizer.Add(bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 10)
-
-        # 輸入/輸出分隔
-        in_out_sizer = wx.GridSizer(cols=2, vgap=10, hgap=10)
-        in_out_bg = wx.StaticBoxSizer(wx.StaticBox(self, label="計算區"), wx.HORIZONTAL)
-        title_font = wx.Font(18, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
-        in_out_bg.GetStaticBox().SetFont(title_font)
-        in_out_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
-        in_out_bg.Add(in_out_sizer, 1, wx.EXPAND | wx.ALL, 10)
-        sizer.Add(in_out_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
-
-        # 數值輸入區
-        input_sizer = wx.StaticBoxSizer(wx.StaticBox(self, label="輸入區"), wx.VERTICAL)
-        input_title_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
-        input_sizer.GetStaticBox().SetFont(input_title_font)
-        input_sizer.GetStaticBox().SetForegroundColour(wx.Colour(0,250,145))
-        in_out_sizer.Add(input_sizer, 0 , wx.ALIGN_CENTER_VERTICAL | wx.ALL ,15)
-
-        # 數值輸出區
-        output_sizer = wx.StaticBoxSizer(wx.StaticBox(self, label="輸出區"), wx.VERTICAL)
-        output_title_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
-        output_sizer.GetStaticBox().SetFont(output_title_font)
-        output_sizer.GetStaticBox().SetForegroundColour(wx.Colour(0,250,145))
-        in_out_sizer.Add(output_sizer, 0 , wx.ALIGN_CENTER_VERTICAL | wx.ALL ,15)
-
-        # 動力設計輸入區
-        input_power_setting = wx.StaticBoxSizer(wx.StaticBox(self, label="動力設計參數"), wx.VERTICAL)
-        font = wx.Font(12, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
-        input_power_setting.GetStaticBox().SetFont(font)
-        # 動力設計欄位入
-        self.motor_power = self.AddLabeledTextCtrl(input_power_setting, "馬達動力 : ", "Kw")
-        input_sizer.Add(input_power_setting, 0, wx.ALIGN_CENTER | wx.ALL, 15)
-
-        # 皮帶計算輸入區
-        input_belt_setting = wx.StaticBoxSizer(wx.StaticBox(self, label="皮帶設計參數"), wx.VERTICAL)
-        font = wx.Font(12, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
-        input_belt_setting.GetStaticBox().SetFont(font)
-        self.belt_diameter = self.AddLabeledTextCtrl(input_belt_setting, "馬達皮帶輪有效直徑 ： ", "mm")
-        self.motor_speed = self.AddLabeledTextCtrl(input_belt_setting, "馬達轉速 ： ", "RPM")
-        self.spindle_spped = self.AddLabeledTextCtrl(input_belt_setting, "主軸轉速 ： ", "RPM")
-        self.axes_distance = self.AddLabeledTextCtrl(input_belt_setting, "皮帶輪軸間距 : ", "mm")
+        # Ko負荷補正係數
+        # 框
+        Ko_bg = wx.StaticBoxSizer(wx.StaticBox(self, label="負荷補正係數(Ko)"), wx.HORIZONTAL)
+        Ko_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        Ko_bg.GetStaticBox().SetFont(Ko_font)
+        Ko_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
+        # 圖片示意
+        Ko_image = wx.Image('images/Ko.png', wx.BITMAP_TYPE_PNG)
+        Ko_image = Ko_image.Scale(800, 300, wx.IMAGE_QUALITY_HIGH)
+        bitmap = wx.StaticBitmap(self, -1, wx.Bitmap(Ko_image))
+        # 加入圖框
+        Ko_bg.Add(bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        # 欄位
+        self.Ko = self.AddLabeledTextCtrl(Ko_bg, "負荷補正係數(Ko) : ", "")
+        sizer.Add(Ko_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
 
 
+        # Ki惰輪修正係數
+        # 框
+        Ki_bg = wx.StaticBoxSizer(wx.StaticBox(self, label="惰輪修正係數(Ki)"), wx.HORIZONTAL)
+        Ki_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        Ki_bg.GetStaticBox().SetFont(Ki_font)
+        Ki_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
+        # 圖片示意
+        Ki_image = wx.Image('images/Ki.png', wx.BITMAP_TYPE_PNG)
+        Ki_image = Ki_image.Scale(800, 300, wx.IMAGE_QUALITY_HIGH)
+        bitmap = wx.StaticBitmap(self, -1, wx.Bitmap(Ki_image))
+        # 加入圖框
+        Ki_bg.Add(bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        # 欄位
+        self.Ki = self.AddLabeledTextCtrl(Ki_bg, "惰輪補正係數(Ki) : ", "")
+        sizer.Add(Ki_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
 
-        self.AddLabeledTextCtrl(input_belt_setting, "惰輪負荷補正系數：", "")
-        self.AddLabeledTextCtrl(input_belt_setting, "電機功率：", "Kw")
-        input_sizer.Add(input_belt_setting, 0 , wx.ALIGN_CENTER | wx.ALL, 15)
+
+        # Ke環境補正係數
+        # 框
+        Ke_bg = wx.StaticBoxSizer(wx.StaticBox(self, label="環境補正係數(Ke)"), wx.HORIZONTAL)
+        Ke_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        Ke_bg.GetStaticBox().SetFont(Ke_font)
+        Ke_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
+        # 圖片示意
+        Ke_image = wx.Image('images/Ke.png', wx.BITMAP_TYPE_PNG)
+        Ke_image = Ke_image.Scale(800, 300, wx.IMAGE_QUALITY_HIGH)
+        bitmap = wx.StaticBitmap(self, -1, wx.Bitmap(Ke_image))
+        # 加入圖框
+        Ke_bg.Add(bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        # 欄位
+        self.Ke = self.AddLabeledTextCtrl(Ke_bg, "環境補正係數(Ke) : ", "")
+        sizer.Add(Ke_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+
+
+        # 設計動力
+        power_bg = wx.StaticBoxSizer(wx.StaticBox(self, label="設計動力(Pd)"), wx.HORIZONTAL)
+        power_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        power_bg.GetStaticBox().SetFont(power_font)
+        power_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
+        power_sizer = wx.GridSizer(cols=2, vgap=10, hgap=200)
+        self.motor_power = self.AddLabeledTextCtrl(power_sizer, "傳輸動力(Pt) : ", "Kw")
+        self.motor_power = self.AddLabeledTextCtrl(power_sizer, "設計動力(Pd) : ", "Kw", readonly=True)
+        power_bg.Add(power_sizer, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        sizer.Add(power_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
 
 
         # 設定按鈕圖案
@@ -176,15 +188,17 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         self.SetScrollRate(20, 20)  # 設置滾動速率
 
     # 欄位新增器
-    def AddLabeledTextCtrl(self, sizer, label, unit):
+    def AddLabeledTextCtrl(self, sizer, label, unit, readonly=False):
         box = wx.BoxSizer(wx.HORIZONTAL)
         # 抬頭
-        lbl = wx.StaticText(self, label=label, size=(200, 20))
+        lbl = wx.StaticText(self, label=label, size=(150, 20))
         font = wx.Font(12, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
         lbl.SetFont(font)
         box.Add(lbl, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
+        # 確認是否為唯獨
+        style = wx.TE_READONLY if readonly else 0
         # 輸入框
-        txt = wx.TextCtrl(self, size=(100, 20))
+        txt = wx.TextCtrl(self, size=(100, 20), style=style)
         box.Add(txt, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
         # 單位
         unit_lbl = wx.StaticText(self, label=unit)
