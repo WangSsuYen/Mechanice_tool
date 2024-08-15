@@ -166,10 +166,24 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         power_bg.GetStaticBox().SetFont(power_font)
         power_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
         power_sizer = wx.GridSizer(cols=2, vgap=10, hgap=200)
-        self.motor_power = self.AddLabeledTextCtrl(power_sizer, "傳輸動力(Pt) : ", "Kw")
-        self.motor_power = self.AddLabeledTextCtrl(power_sizer, "設計動力(Pd) : ", "Kw", readonly=True)
+        self.motor_torque = self.AddLabeledTextCtrl(power_sizer, "傳輸動力(Pt) : ", "Kw")
+        self.design_torque = self.AddLabeledTextCtrl(power_sizer, "設計動力(Pd) : ", "Kw", readonly=True)
         power_bg.Add(power_sizer, 0, wx.ALIGN_CENTER | wx.ALL, 10)
         sizer.Add(power_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+
+
+        # 皮帶輪有效直徑
+        pulley_bg = wx.StaticBoxSizer(wx.StaticBox(self, label="皮帶輪計算"), wx.HORIZONTAL)
+        pulley_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        pulley_bg.GetStaticBox().SetFont(pulley_font)
+        pulley_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
+        pulley_sizer = wx.GridSizer(cols=3, vgap=10, hgap=200)
+        self.motor_pulley_diameter = self.AddLabeledTextCtrl(pulley_sizer, "馬達皮帶輪有效直徑 : ", "mm")
+        self.motor_RPM = self.AddLabeledTextCtrl(pulley_sizer, "馬達轉速 : ", "RPM")
+        self.spindle_RPM = self.AddLabeledTextCtrl(pulley_sizer, "主軸轉速 : ", "RPM")
+        self.spindle_pulley_diameter = self.AddLabeledTextCtrl(pulley_sizer, "主軸皮帶輪有效直徑 : ", "mm", readonly=True)
+        pulley_bg.Add(pulley_sizer, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        sizer.Add(pulley_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
 
 
         # 設定按鈕圖案
@@ -180,7 +194,7 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         # 添加計算按鈕
         calc_button = wx.BitmapButton(self, bitmap=btn_bitmap)
         calc_button.SetBackgroundColour(wx.Colour(255, 0, 0))
-        # calc_button.Bind(wx.EVT_BUTTON, self.expression)
+        calc_button.Bind(wx.EVT_BUTTON, self.expression)
         sizer.Add(calc_button, 0, wx.ALIGN_CENTER | wx.TOP, 30)
 
         # 設置滾動區域
@@ -191,7 +205,7 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
     def AddLabeledTextCtrl(self, sizer, label, unit, readonly=False):
         box = wx.BoxSizer(wx.HORIZONTAL)
         # 抬頭
-        lbl = wx.StaticText(self, label=label, size=(150, 20))
+        lbl = wx.StaticText(self, label=label, size=(170, 20))
         font = wx.Font(12, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
         lbl.SetFont(font)
         box.Add(lbl, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
@@ -206,6 +220,22 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         # 添加到主布局
         sizer.Add(box, 0, wx.EXPAND | wx.ALL, 5)
         return txt
+
+    # 運算式
+    def expression(self, event):
+        try:
+            Ko = float(self.Ko.GetValue())
+            Ki = float(self.Ki.GetValue())
+            Ke = float(self.Ke.GetValue())
+            motor_torque = float(self.motor_torque.GetValue())
+
+            # 設計動力
+            self.design_torque.SetValue(f"{round(motor_torque * (Ko + Ki + Ke), 2)}")
+
+
+
+        except ValueError:
+            wx.MessageBox('請輸入有效的數字', '錯誤', wx.OK | wx.ICON_ERROR)
 
 
 
