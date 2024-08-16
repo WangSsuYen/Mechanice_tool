@@ -116,10 +116,10 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
 
         # 第一階段運算畫面
         first_level_bg = wx.StaticBoxSizer(wx.StaticBox(self, label="第一階段運算"), wx.VERTICAL)
-        font = wx.Font(25, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
-        first_level_bg.GetStaticBox().SetFont(font)
+        first_font = wx.Font(25, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        first_level_bg.GetStaticBox().SetFont(first_font)
         first_level_bg.GetStaticBox().SetForegroundColour(wx.Colour(0,0,255))
-        sizer.Add(first_level_bg, 0, wx.ALIGN_CENTER | wx.ALL, 20)
+        sizer.Add(first_level_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
 
         # Ko負荷補正係數
         # 框
@@ -220,7 +220,50 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         calc_button = wx.BitmapButton(self, bitmap=btn_bitmap)
         calc_button.SetBackgroundColour(wx.Colour(255, 0, 0))
         calc_button.Bind(wx.EVT_BUTTON, self.expression)
-        first_level_bg.Add(calc_button, 0, wx.ALIGN_CENTER | wx.TOP, 30)
+        first_level_bg.Add(calc_button, 0, wx.ALIGN_CENTER | wx.TOP, 10)
+
+# ----------------------------------我是分隔線---------------------------------------------------
+        # 第二階段運算畫面
+        second_level_bg = wx.StaticBoxSizer(wx.StaticBox(self, label="第二階段運算"), wx.VERTICAL)
+        second_font = wx.Font(25, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        second_level_bg.GetStaticBox().SetFont(second_font)
+        second_level_bg.GetStaticBox().SetForegroundColour(wx.Colour(0,0,255))
+        sizer.Add(second_level_bg, 0, wx.ALIGN_CENTER | wx.ALL, 20)
+
+        # Kθ接觸角係數
+        Kθ_bg = wx.StaticBoxSizer(wx.StaticBox(self, label="Kθ接觸角係數"), wx.HORIZONTAL)
+        Kθ_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        Kθ_bg.GetStaticBox().SetFont(Kθ_font)
+        Kθ_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
+        belt_length_sizer = wx.GridSizer(cols=3, vgap=10, hgap=100)
+        # 圖片示意
+        Kθ_image = wx.Image('images/Kθ.jpg', wx.BITMAP_TYPE_JPEG)
+        Kθ_image = Kθ_image.Scale(800, 300, wx.IMAGE_QUALITY_HIGH)
+        bitmap = wx.StaticBitmap(self, -1, wx.Bitmap(Kθ_image))
+        # 加入圖框
+        Kθ_bg.Add(bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        # 欄位
+        self.Kθ = self.AddLabeledTextCtrl(Kθ_bg, "接觸角補正係數(Kθ) : ", "", 160, 20, readonly=True)
+        second_level_bg.Add(Kθ_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+
+
+        # Kl長度補正係數
+        Kl_bg = wx.StaticBoxSizer(wx.StaticBox(self, label="Kl長度補正係數"), wx.HORIZONTAL)
+        Kl_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        Kl_bg.GetStaticBox().SetFont(Kl_font)
+        Kl_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
+        belt_length_sizer = wx.GridSizer(cols=3, vgap=10, hgap=100)
+        # 圖片示意
+        Kl_image = wx.Image('images/Kl.jpg', wx.BITMAP_TYPE_JPEG)
+        Kl_image = Kl_image.Scale(300, 800, wx.IMAGE_QUALITY_HIGH)
+        bitmap = wx.StaticBitmap(self, -1, wx.Bitmap(Kl_image))
+        # 加入圖框
+        Kl_bg.Add(bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        # 欄位
+        self.Kl = self.AddLabeledTextCtrl(Kl_bg, "長度補正係數(Kθ) : ", "", 160, 20, readonly=True)
+        second_level_bg.Add(Kl_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+
+
 
         # 設置滾動區域
         self.SetScrollbars(50, 50, 50, 50)  # 設置捲動條，(水平步長, 垂直步長, 水平範圍, 垂直範圍)
