@@ -57,6 +57,7 @@ class MainFrame(wx.Frame):
         self.panel = wx.Panel(self)
         self.sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.panel.SetSizer(self.sizer)
+        self.panel.SetBackgroundColour(wx.Colour(112,128,144))
 
         # 側邊欄位規劃
         self.side_menu = SideMenu(self.panel)
