@@ -1,4 +1,5 @@
 import wx, math
+from data import *
 
 # 螺桿推力計算
 class ScrewThrustPanel(wx.ScrolledWindow):
@@ -113,6 +114,7 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         # 畫面規劃
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(sizer)
+        fixed_size = wx.Size(1200,-1)
 
         # 第一階段運算畫面
         first_level_bg = wx.StaticBoxSizer(wx.StaticBox(self, label="第一階段運算"), wx.VERTICAL)
@@ -127,6 +129,7 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         Ko_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
         Ko_bg.GetStaticBox().SetFont(Ko_font)
         Ko_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
+        Ko_bg.GetStaticBox().SetMinSize(fixed_size)
         # 圖片示意
         Ko_image = wx.Image('images/Ko.png', wx.BITMAP_TYPE_PNG)
         Ko_image = Ko_image.Scale(800, 300, wx.IMAGE_QUALITY_HIGH)
@@ -144,6 +147,7 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         Ki_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
         Ki_bg.GetStaticBox().SetFont(Ki_font)
         Ki_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
+        Ki_bg.GetStaticBox().SetMinSize(fixed_size)
         # 圖片示意
         Ki_image = wx.Image('images/Ki.png', wx.BITMAP_TYPE_PNG)
         Ki_image = Ki_image.Scale(800, 300, wx.IMAGE_QUALITY_HIGH)
@@ -161,6 +165,7 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         Ke_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
         Ke_bg.GetStaticBox().SetFont(Ke_font)
         Ke_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
+        Ke_bg.GetStaticBox().SetMinSize(fixed_size)
         # 圖片示意
         Ke_image = wx.Image('images/Ke.png', wx.BITMAP_TYPE_PNG)
         Ke_image = Ke_image.Scale(800, 300, wx.IMAGE_QUALITY_HIGH)
@@ -177,6 +182,7 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         power_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
         power_bg.GetStaticBox().SetFont(power_font)
         power_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
+        power_bg.GetStaticBox().SetMinSize(fixed_size)
         power_sizer = wx.GridSizer(cols=2, vgap=10, hgap=100)
         self.motor_torque = self.AddLabeledTextCtrl(power_sizer, "傳輸動力(Pt) : ", "Kw", 120, 20)
         self.design_torque = self.AddLabeledTextCtrl(power_sizer, "設計動力(Pd) : ", "Kw", 120, 20, readonly=True)
@@ -189,7 +195,8 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         pulley_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
         pulley_bg.GetStaticBox().SetFont(pulley_font)
         pulley_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
-        pulley_sizer = wx.GridSizer(cols=3, vgap=10, hgap=100)
+        pulley_bg.GetStaticBox().SetMinSize(fixed_size)
+        pulley_sizer = wx.GridSizer(cols=3, vgap=10, hgap=50)
         self.motor_pulley_diameter = self.AddLabeledTextCtrl(pulley_sizer, "馬達皮帶輪有效直徑 : ", "mm", 170, 20)
         self.motor_RPM = self.AddLabeledTextCtrl(pulley_sizer, "馬達轉速 : ", "RPM", 80, 20)
         self.spindle_RPM = self.AddLabeledTextCtrl(pulley_sizer, "主軸轉速 : ", "RPM", 80, 20)
@@ -203,12 +210,47 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         belt_length_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
         belt_length_bg.GetStaticBox().SetFont(belt_length_font)
         belt_length_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
+        belt_length_bg.GetStaticBox().SetMinSize(fixed_size)
         belt_length_sizer = wx.GridSizer(cols=3, vgap=10, hgap=100)
         self.distance_between_pulley = self.AddLabeledTextCtrl(belt_length_sizer, "皮帶輪中心距 : ", "mm", 120, 20)
         self.belt_perimeter = self.AddLabeledTextCtrl(belt_length_sizer, "皮帶周長 : ", "mm", 90, 20, readonly=True)
         self.belt_contact_degress = self.AddLabeledTextCtrl(belt_length_sizer, "接觸角 :  : ", "°", 90, 20, readonly=True)
         belt_length_bg.Add(belt_length_sizer, 0 ,wx.ALIGN_CENTER | wx.ALL , 10)
         first_level_bg.Add(belt_length_bg, 0 ,wx.ALIGN_CENTER | wx.ALL , 10)
+
+
+        # Kθ接觸角係數
+        Kθ_bg = wx.StaticBoxSizer(wx.StaticBox(self, label="Kθ接觸角係數"), wx.HORIZONTAL)
+        Kθ_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        Kθ_bg.GetStaticBox().SetFont(Kθ_font)
+        Kθ_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
+        Kθ_bg.GetStaticBox().SetMinSize(fixed_size)
+        # 圖片示意
+        Kθ_image = wx.Image('images/Kθ.jpg', wx.BITMAP_TYPE_JPEG)
+        Kθ_image = Kθ_image.Scale(800, 300, wx.IMAGE_QUALITY_HIGH)
+        bitmap = wx.StaticBitmap(self, -1, wx.Bitmap(Kθ_image))
+        # 加入圖框
+        Kθ_bg.Add(bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        # 欄位
+        self.Kθ = self.AddLabeledTextCtrl(Kθ_bg, "接觸角補正係數(Kθ) : ", "", 160, 20, readonly=True)
+        first_level_bg.Add(Kθ_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+
+
+        # Kl長度補正係數
+        Kl_bg = wx.StaticBoxSizer(wx.StaticBox(self, label="Kl長度補正係數"), wx.HORIZONTAL)
+        Kl_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        Kl_bg.GetStaticBox().SetFont(Kl_font)
+        Kl_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
+        Kl_bg.GetStaticBox().SetMinSize(fixed_size)
+        # 圖片示意
+        Kl_image = wx.Image('images/Kl.jpg', wx.BITMAP_TYPE_JPEG)
+        Kl_image = Kl_image.Scale(300, 800, wx.IMAGE_QUALITY_HIGH)
+        bitmap = wx.StaticBitmap(self, -1, wx.Bitmap(Kl_image))
+        # 加入圖框
+        Kl_bg.Add(bitmap, 0, wx.ALIGN_CENTER | wx.RIGHT, 100)
+        # 欄位
+        self.Kl = self.AddLabeledTextCtrl(Kl_bg, "長度補正係數(Kθ) : ", "", 160, 20, readonly=True)
+        first_level_bg.Add(Kl_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
 
 
         # 設定按鈕圖案
@@ -221,48 +263,6 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         calc_button.SetBackgroundColour(wx.Colour(255, 0, 0))
         calc_button.Bind(wx.EVT_BUTTON, self.expression)
         first_level_bg.Add(calc_button, 0, wx.ALIGN_CENTER | wx.TOP, 10)
-
-# ----------------------------------我是分隔線---------------------------------------------------
-        # 第二階段運算畫面
-        second_level_bg = wx.StaticBoxSizer(wx.StaticBox(self, label="第二階段運算"), wx.VERTICAL)
-        second_font = wx.Font(25, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
-        second_level_bg.GetStaticBox().SetFont(second_font)
-        second_level_bg.GetStaticBox().SetForegroundColour(wx.Colour(0,0,255))
-        sizer.Add(second_level_bg, 0, wx.ALIGN_CENTER | wx.ALL, 20)
-
-        # Kθ接觸角係數
-        Kθ_bg = wx.StaticBoxSizer(wx.StaticBox(self, label="Kθ接觸角係數"), wx.HORIZONTAL)
-        Kθ_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
-        Kθ_bg.GetStaticBox().SetFont(Kθ_font)
-        Kθ_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
-        belt_length_sizer = wx.GridSizer(cols=3, vgap=10, hgap=100)
-        # 圖片示意
-        Kθ_image = wx.Image('images/Kθ.jpg', wx.BITMAP_TYPE_JPEG)
-        Kθ_image = Kθ_image.Scale(800, 300, wx.IMAGE_QUALITY_HIGH)
-        bitmap = wx.StaticBitmap(self, -1, wx.Bitmap(Kθ_image))
-        # 加入圖框
-        Kθ_bg.Add(bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 10)
-        # 欄位
-        self.Kθ = self.AddLabeledTextCtrl(Kθ_bg, "接觸角補正係數(Kθ) : ", "", 160, 20, readonly=True)
-        second_level_bg.Add(Kθ_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
-
-
-        # Kl長度補正係數
-        Kl_bg = wx.StaticBoxSizer(wx.StaticBox(self, label="Kl長度補正係數"), wx.HORIZONTAL)
-        Kl_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
-        Kl_bg.GetStaticBox().SetFont(Kl_font)
-        Kl_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
-        belt_length_sizer = wx.GridSizer(cols=3, vgap=10, hgap=100)
-        # 圖片示意
-        Kl_image = wx.Image('images/Kl.jpg', wx.BITMAP_TYPE_JPEG)
-        Kl_image = Kl_image.Scale(300, 800, wx.IMAGE_QUALITY_HIGH)
-        bitmap = wx.StaticBitmap(self, -1, wx.Bitmap(Kl_image))
-        # 加入圖框
-        Kl_bg.Add(bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 10)
-        # 欄位
-        self.Kl = self.AddLabeledTextCtrl(Kl_bg, "長度補正係數(Kθ) : ", "", 160, 20, readonly=True)
-        second_level_bg.Add(Kl_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
-
 
 
         # 設置滾動區域
@@ -298,6 +298,7 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
 
     # 運算式
     def expression(self, event):
+        Kθ = read_excel()
         try:
             Ko = float(self.Ko.GetValue())
             Ki = float(self.Ki.GetValue())
@@ -307,6 +308,7 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
             motor_RPM = float(self.motor_RPM.GetValue())
             spindle_RPM = float(self.spindle_RPM.GetValue())
             distance_between_pulley = float(self.distance_between_pulley.GetValue())
+
 
             # 間接運算式
             # 主軸皮帶直徑運算
@@ -324,7 +326,12 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
             self.belt_perimeter.SetValue(f"{belt_perimeter}")
 
             # 接觸角運算
-            self.belt_contact_degress.SetValue(f"{round(180 - ((math.asin(abs(motor_pulley_diameter - spindle_pulley_diameter) / distance_between_pulley) * 180 / math.pi) * 2),2)}")
+            belt_contact_degress = float(round(180 - ((math.asin(abs(motor_pulley_diameter - spindle_pulley_diameter) / distance_between_pulley) * 180 / math.pi) * 2),2))
+            self.belt_contact_degress.SetValue(f"{belt_contact_degress}")
+
+            # Kθ的值
+            Kθ_value = Kθ.Kθ_value(belt_contact_degress)
+            self.Kθ.SetValue(f"{Kθ_value}")
 
 
 
