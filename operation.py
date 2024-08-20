@@ -219,6 +219,22 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         first_level_bg.Add(belt_length_bg, 0 ,wx.ALIGN_CENTER | wx.ALL , 10)
 
 
+        # 皮帶建議
+        belt_selection_bg = wx.StaticBoxSizer(wx.StaticBox(self, label="建議皮帶使用"), wx.HORIZONTAL)
+        belt_selection_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        belt_selection_bg.GetStaticBox().SetFont(belt_selection_font)
+        belt_selection_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
+        belt_selection_bg.GetStaticBox().SetMinSize(fixed_size)
+        # 圖片示意
+        belt_selection_image = wx.Image('images/belt_selection.jpg', wx.BITMAP_TYPE_JPEG)
+        belt_selection_image = belt_selection_image.Scale(800, 300, wx.IMAGE_QUALITY_HIGH)
+        bitmap = wx.StaticBitmap(self, -1, wx.Bitmap(belt_selection_image))
+        # 加入圖框
+        belt_selection_bg.Add(bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        self.belt_selection = self.AddLabeledTextCtrl(belt_selection_bg, "建議使用皮帶 : ", "", 120, 20, readonly=True)
+        first_level_bg.Add(belt_selection_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+
+
         # Kθ接觸角係數
         Kθ_bg = wx.StaticBoxSizer(wx.StaticBox(self, label="Kθ接觸角係數"), wx.HORIZONTAL)
         Kθ_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
@@ -251,6 +267,8 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         # 欄位
         self.Kl = self.AddLabeledTextCtrl(Kl_bg, "長度補正係數(Kθ) : ", "", 160, 20, readonly=True)
         first_level_bg.Add(Kl_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+
+        # Kc容量補正
 
 
         # 設定按鈕圖案
@@ -298,41 +316,59 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
 
     # 運算式
     def expression(self, event):
-        Kθ = read_excel()
+        datas = read_excel()
         try:
             Ko = float(self.Ko.GetValue())
             Ki = float(self.Ki.GetValue())
             Ke = float(self.Ke.GetValue())
+            # 馬達動力
             motor_torque = float(self.motor_torque.GetValue())
+            # 馬達皮帶輪直徑
             motor_pulley_diameter = float(self.motor_pulley_diameter.GetValue())
+            # 馬達轉速
             motor_RPM = float(self.motor_RPM.GetValue())
+            # 主軸轉速
             spindle_RPM = float(self.spindle_RPM.GetValue())
+            # 皮帶輪間距
             distance_between_pulley = float(self.distance_between_pulley.GetValue())
-
-
-            # 間接運算式
-            # 主軸皮帶直徑運算
+            # 設計動力
+            design_torque = float(round(motor_torque * (Ko + Ki + Ke), 2))
+            # 主軸皮帶直徑
             spindle_pulley_diameter = float(round(motor_pulley_diameter / spindle_RPM * motor_RPM ,2))
-            # 皮帶輪軸間距
+            # 皮帶周長
             belt_perimeter = float(round(2 * distance_between_pulley + ((motor_pulley_diameter + spindle_pulley_diameter) * 1.57554),2))
+            # 皮帶接觸角
+            belt_contact_degress = float(round(180 - ((math.asin(abs(motor_pulley_diameter - spindle_pulley_diameter) / distance_between_pulley) * 180 / math.pi) * 2),2))
+            # Kθ的值
+            Kθ_value = datas.Kθ_value(belt_contact_degress)
+            # Kl值
+            Kl_value = datas.Kl_value(belt_perimeter, belt_selection)
+            # Kc運動容量補正係數
+            rotation_container_coefficient = float(round(Kθ_value * Kl_value, 2))
+            # Ps基準運動動力(Kw)
+            ps_value = datas.ps_value(spindle_RPM,spindle_pulley_diameter)
+            # Pa迴轉比附加動力(Kw)
+            pa_value = datas.pa_value(spindle_RPM, motor_RPM, spindle_RPM)
+            # Pc運動容量補正(Kw)
+            pc_value = (ps_value + pa_value) * rotation_container_coefficient
+
+
 
             # 設計動力運算
-            self.design_torque.SetValue(f"{round(motor_torque * (Ko + Ki + Ke), 2)}")
-
+            self.design_torque.SetValue(f"{design_torque}")
             # 主軸皮帶倫有效直徑運算
             self.spindle_pulley_diameter.SetValue(f"{spindle_pulley_diameter}")
-
             # 皮帶周長計算
             self.belt_perimeter.SetValue(f"{belt_perimeter}")
-
+            # 皮帶建議
+            belt_selection = datas.belt_selection(spindle_RPM,design_torque)
+            self.belt_selection.SetValue(f"{belt_selection}")
             # 接觸角運算
-            belt_contact_degress = float(round(180 - ((math.asin(abs(motor_pulley_diameter - spindle_pulley_diameter) / distance_between_pulley) * 180 / math.pi) * 2),2))
             self.belt_contact_degress.SetValue(f"{belt_contact_degress}")
-
-            # Kθ的值
-            Kθ_value = Kθ.Kθ_value(belt_contact_degress)
+            # Kθ值
             self.Kθ.SetValue(f"{Kθ_value}")
-
+            # Kl值
+            self.Kl.SetValue(f"{Kl_value}")
 
 
         except ValueError:
