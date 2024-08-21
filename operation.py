@@ -263,12 +263,22 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         Kl_image = Kl_image.Scale(300, 800, wx.IMAGE_QUALITY_HIGH)
         bitmap = wx.StaticBitmap(self, -1, wx.Bitmap(Kl_image))
         # 加入圖框
-        Kl_bg.Add(bitmap, 0, wx.ALIGN_CENTER | wx.RIGHT, 100)
+        Kl_bg.Add(bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 20)
         # 欄位
         self.Kl = self.AddLabeledTextCtrl(Kl_bg, "長度補正係數(Kθ) : ", "", 160, 20, readonly=True)
         first_level_bg.Add(Kl_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
 
-        # Kc容量補正
+        # Kc容量補正及皮帶用量
+        Kc_bg = wx.StaticBoxSizer(wx.StaticBox(self, label="輸出"), wx.HORIZONTAL)
+        Kc_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        Kc_bg.GetStaticBox().SetFont(Kc_font)
+        Kc_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
+        Kc_bg.GetStaticBox().SetMinSize(fixed_size)
+        Kc_sizer = wx.GridSizer(cols=2, vgap=10, hgap=100)
+        self.pc_value = self.AddLabeledTextCtrl(Kc_sizer, "補正運動容量 : ", "Kw", 100, 20, readonly=True)
+        self.belt_count = self.AddLabeledTextCtrl(Kc_sizer, "皮帶用量 : ", "條", 80, 20, readonly=True)
+        Kc_bg.Add(Kc_sizer, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        first_level_bg.Add(Kc_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
 
 
         # 設定按鈕圖案
@@ -339,18 +349,22 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
             belt_perimeter = float(round(2 * distance_between_pulley + ((motor_pulley_diameter + spindle_pulley_diameter) * 1.57554),2))
             # 皮帶接觸角
             belt_contact_degress = float(round(180 - ((math.asin(abs(motor_pulley_diameter - spindle_pulley_diameter) / distance_between_pulley) * 180 / math.pi) * 2),2))
+            # 皮帶選擇
+            belt_selection = datas.belt_selection(motor_RPM,design_torque)
             # Kθ的值
             Kθ_value = datas.Kθ_value(belt_contact_degress)
             # Kl值
-            Kl_value = datas.Kl_value(belt_perimeter, belt_selection)
+            Kl_value = datas.Kl_value(distance_between_pulley, belt_selection)
             # Kc運動容量補正係數
             rotation_container_coefficient = float(round(Kθ_value * Kl_value, 2))
             # Ps基準運動動力(Kw)
-            ps_value = datas.ps_value(spindle_RPM,spindle_pulley_diameter)
+            ps_value = datas.ps_value(belt_selection, spindle_RPM, spindle_pulley_diameter)
             # Pa迴轉比附加動力(Kw)
-            pa_value = datas.pa_value(spindle_RPM, motor_RPM, spindle_RPM)
+            pa_value = datas.pa_value(belt_selection, spindle_RPM, motor_RPM)
             # Pc運動容量補正(Kw)
-            pc_value = (ps_value + pa_value) * rotation_container_coefficient
+            pc_value = round((ps_value + pa_value) * rotation_container_coefficient, 2)
+            # 皮帶使用數量
+            belt_count = math.ceil(design_torque / pc_value)
 
 
 
@@ -361,7 +375,6 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
             # 皮帶周長計算
             self.belt_perimeter.SetValue(f"{belt_perimeter}")
             # 皮帶建議
-            belt_selection = datas.belt_selection(spindle_RPM,design_torque)
             self.belt_selection.SetValue(f"{belt_selection}")
             # 接觸角運算
             self.belt_contact_degress.SetValue(f"{belt_contact_degress}")
@@ -369,6 +382,10 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
             self.Kθ.SetValue(f"{Kθ_value}")
             # Kl值
             self.Kl.SetValue(f"{Kl_value}")
+            # Pc值
+            self.pc_value.SetValue(f"{pc_value}")
+            # 皮帶使用數量
+            self.belt_count.SetValue(f"{belt_count}")
 
 
         except ValueError:
