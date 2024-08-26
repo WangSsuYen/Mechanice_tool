@@ -111,17 +111,11 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         self.InitUI()
 
     def InitUI(self):
+        # 畫面長寬設定
+        fixed_size = wx.Size(1200,-1)
         # 畫面規劃
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(sizer)
-        fixed_size = wx.Size(1200,-1)
-
-        # 第一階段運算畫面
-        first_level_bg = wx.StaticBoxSizer(wx.StaticBox(self, label="第一階段運算"), wx.VERTICAL)
-        first_font = wx.Font(25, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
-        first_level_bg.GetStaticBox().SetFont(first_font)
-        first_level_bg.GetStaticBox().SetForegroundColour(wx.Colour(0,0,255))
-        sizer.Add(first_level_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
 
         # Ko負荷補正係數
         # 框
@@ -138,7 +132,7 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         Ko_bg.Add(bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 10)
         # 欄位
         self.Ko = self.AddLabeledTextCtrl(Ko_bg, "負荷補正係數(Ko) : ", "", 150, 20)
-        first_level_bg.Add(Ko_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        sizer.Add(Ko_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
 
 
         # Ki惰輪修正係數
@@ -156,7 +150,7 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         Ki_bg.Add(bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 10)
         # 欄位
         self.Ki = self.AddLabeledTextCtrl(Ki_bg, "惰輪補正係數(Ki) : ", "", 150, 20)
-        first_level_bg.Add(Ki_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        sizer.Add(Ki_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
 
 
         # Ke環境補正係數
@@ -174,7 +168,7 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         Ke_bg.Add(bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 10)
         # 欄位
         self.Ke = self.AddLabeledTextCtrl(Ke_bg, "環境補正係數(Ke) : ", "", 150, 20)
-        first_level_bg.Add(Ke_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        sizer.Add(Ke_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
 
 
         # 設計動力
@@ -187,7 +181,7 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         self.motor_torque = self.AddLabeledTextCtrl(power_sizer, "傳輸動力(Pt) : ", "Kw", 120, 20)
         self.design_torque = self.AddLabeledTextCtrl(power_sizer, "設計動力(Pd) : ", "Kw", 120, 20, readonly=True)
         power_bg.Add(power_sizer, 0, wx.ALIGN_CENTER | wx.ALL, 10)
-        first_level_bg.Add(power_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        sizer.Add(power_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
 
 
         # 皮帶輪有效直徑
@@ -202,7 +196,7 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         self.spindle_RPM = self.AddLabeledTextCtrl(pulley_sizer, "主軸轉速 : ", "RPM", 80, 20)
         self.spindle_pulley_diameter = self.AddLabeledTextCtrl(pulley_sizer, "主軸皮帶輪有效直徑 : ", "mm", 170, 20, readonly=True)
         pulley_bg.Add(pulley_sizer, 0, wx.ALIGN_CENTER | wx.ALL, 10)
-        first_level_bg.Add(pulley_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        sizer.Add(pulley_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
 
 
         # 求皮帶長度
@@ -216,7 +210,7 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         self.belt_perimeter = self.AddLabeledTextCtrl(belt_length_sizer, "皮帶周長 : ", "mm", 90, 20, readonly=True)
         self.belt_contact_degress = self.AddLabeledTextCtrl(belt_length_sizer, "接觸角 :  : ", "°", 90, 20, readonly=True)
         belt_length_bg.Add(belt_length_sizer, 0 ,wx.ALIGN_CENTER | wx.ALL , 10)
-        first_level_bg.Add(belt_length_bg, 0 ,wx.ALIGN_CENTER | wx.ALL , 10)
+        sizer.Add(belt_length_bg, 0 ,wx.ALIGN_CENTER | wx.ALL , 10)
 
 
         # 皮帶建議
@@ -232,7 +226,7 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         # 加入圖框
         belt_selection_bg.Add(bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 10)
         self.belt_selection = self.AddLabeledTextCtrl(belt_selection_bg, "建議使用皮帶 : ", "", 120, 20, readonly=True)
-        first_level_bg.Add(belt_selection_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        sizer.Add(belt_selection_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
 
 
         # Kθ接觸角係數
@@ -249,7 +243,7 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         Kθ_bg.Add(bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 10)
         # 欄位
         self.Kθ = self.AddLabeledTextCtrl(Kθ_bg, "接觸角補正係數(Kθ) : ", "", 160, 20, readonly=True)
-        first_level_bg.Add(Kθ_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        sizer.Add(Kθ_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
 
 
         # Kl長度補正係數
@@ -266,7 +260,7 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         Kl_bg.Add(bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 20)
         # 欄位
         self.Kl = self.AddLabeledTextCtrl(Kl_bg, "長度補正係數(Kθ) : ", "", 160, 20, readonly=True)
-        first_level_bg.Add(Kl_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        sizer.Add(Kl_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
 
         # Kc容量補正及皮帶用量
         Kc_bg = wx.StaticBoxSizer(wx.StaticBox(self, label="輸出"), wx.HORIZONTAL)
@@ -278,7 +272,7 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         self.pc_value = self.AddLabeledTextCtrl(Kc_sizer, "補正運動容量 : ", "Kw", 100, 20, readonly=True)
         self.belt_count = self.AddLabeledTextCtrl(Kc_sizer, "皮帶用量 : ", "條", 80, 20, readonly=True)
         Kc_bg.Add(Kc_sizer, 0, wx.ALIGN_CENTER | wx.ALL, 10)
-        first_level_bg.Add(Kc_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        sizer.Add(Kc_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
 
 
         # 設定按鈕圖案
@@ -290,7 +284,7 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         calc_button = wx.BitmapButton(self, bitmap=btn_bitmap)
         calc_button.SetBackgroundColour(wx.Colour(255, 0, 0))
         calc_button.Bind(wx.EVT_BUTTON, self.expression)
-        first_level_bg.Add(calc_button, 0, wx.ALIGN_CENTER | wx.TOP, 10)
+        sizer.Add(calc_button, 0, wx.ALIGN_CENTER | wx.TOP, 10)
 
 
         # 設置滾動區域
@@ -393,8 +387,293 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
 
 
 
-# 流體力學計算
-class FluidMechanicsPanel(wx.Panel):
+# 軸承壽命估算
+class bearing_lifespan(wx.ScrolledWindow):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.InitUI()
+
+    def InitUI(self):
+        # 畫面長寬設定
+        fixed_size = wx.Size(1200,-1)
+        # 畫面管理器
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        self.SetSizer(sizer)
+
+        picture_sizer = wx.GridSizer(cols=2, vgap=10, hgap=200)
+        # 添加圖片及文字
+        angular_image_with_text = self.AddTextToImage('images/angular_bearing.jpg', '斜角滾珠軸承示意圖')
+        angular_bitmap = wx.StaticBitmap(self, -1, angular_image_with_text)
+        picture_sizer.Add(angular_bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+
+        cylindrical_image_with_text = self.AddTextToImage('images/cylindrical_bearing.png', '滾針軸承示意圖')
+        cylindrical_bitmap = wx.StaticBitmap(self, -1, cylindrical_image_with_text)
+        picture_sizer.Add(cylindrical_bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+
+        sizer.Add(picture_sizer, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+
+         # 添加下拉選擇欄位
+        self.AddDropdown(sizer)
+
+        # 輸入區
+        bg_sizer = wx.StaticBoxSizer(wx.StaticBox(self, label="輸入區"), wx.HORIZONTAL)
+        bg_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        bg_sizer.GetStaticBox().SetFont(bg_font)
+        bg_sizer.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
+        bg_sizer.GetStaticBox().SetMinSize(fixed_size)
+
+        # 輸入區
+        input_sizer = wx.GridSizer(cols=3, vgap=10, hgap=200)
+        self.dynamic_load = self.AddLabeledTextCtrl(input_sizer, "額定動負載 ：", "KN", 140, 20)
+        self.bearing_dynamic_load = self.AddLabeledTextCtrl(input_sizer, "軸承當量動負載 ：", "KN", 140, 20)
+        self.rpm = self.AddLabeledTextCtrl(input_sizer, "轉速 ：", "RPM", 140, 20)
+        bg_sizer.Add(input_sizer, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        sizer.Add(bg_sizer, 0, wx.ALIGN_CENTER|wx.ALL, 10)
+
+        # 輸出區
+        output_sizer = wx.GridSizer(cols=2, vgap=10, hgap=100)
+        self.rpm_lifespan = self.AddLabeledTextCtrl(output_sizer, "基本額定壽命 ：", "Millions RPM", 140, 20, readonly=True)
+        self.hour_lifespan = self.AddLabeledTextCtrl(output_sizer, "基本額定壽命 ：", "Hours", 140, 20, readonly=True)
+        sizer.Add(output_sizer, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+
+        # 設定按鈕圖案
+        btn_icon = wx.Image("images/submit.png", wx.BITMAP_TYPE_PNG)
+        btn_icon = btn_icon.Scale(60, 60, wx.IMAGE_QUALITY_HIGH)
+        btn_bitmap = wx.Bitmap(btn_icon)
+
+        # 添加計算按鈕
+        calc_button = wx.BitmapButton(self, bitmap=btn_bitmap)
+        calc_button.SetBackgroundColour(wx.Colour(255, 0, 0))
+        calc_button.Bind(wx.EVT_BUTTON, self.expression)
+        sizer.Add(calc_button, 0, wx.ALIGN_CENTER | wx.TOP, 10)
+
+        # 設置滾動區域
+        self.SetScrollbars(50, 50, 50, 50)  # 設置捲動條，(水平步長, 垂直步長, 水平範圍, 垂直範圍)
+        self.SetScrollRate(20, 20)  # 設置滾動速率
+
+
+    def AddTextToImage(self, image_path, text):
+        # 加載圖片
+        image = wx.Image(image_path, wx.BITMAP_TYPE_ANY)
+        # 創建畫布
+        bmp = wx.Bitmap(image)
+        width, height = bmp.GetSize()
+        # 創建內存DC
+        mem_dc = wx.MemoryDC()
+        mem_dc.SelectObject(bmp)
+        # 設置字型
+        font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        mem_dc.SetFont(font)
+        # 設置文字顏色
+        mem_dc.SetTextForeground(wx.Colour(255, 0, 0))  # 使用紅色字體
+        # 計算文字位置
+        text_width, text_height = mem_dc.GetTextExtent(text)
+        x = (width - text_width) // 2  # 文字水平居中
+        y = height - text_height - 10  # 文字位置從底部上方10像素
+        # 繪制文字
+        mem_dc.DrawText(text, x, y)
+        # 清理
+        mem_dc.SelectObject(wx.NullBitmap)
+        # 返回帶有文字的圖片
+        return bmp
+
+
+    # 下拉選擇器
+    def AddDropdown(self, sizer):
+        # 創建下拉選擇欄位
+        dropdown_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        dropdown_lbl = wx.StaticText(self, label="選擇軸承滾珠類別 ： ", size=(200, 30))
+        dropdown_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        dropdown_lbl.SetFont(dropdown_font)
+        dropdown_lbl.SetForegroundColour(wx.Colour(255,106,106))
+        # 選項
+        self.options = {"滾珠軸承":3, "滾子/針軸承":3.33333333}
+        # 提取選項
+        self.choices = list(self.options.keys())
+
+        self.dropdown = wx.Choice(self, choices=self.choices, size=(150, 30))
+        dropdown_sizer.Add(dropdown_lbl, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
+        dropdown_sizer.Add(self.dropdown, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
+        sizer.Add(dropdown_sizer, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+
+
+    # 欄位新增器
+    def AddLabeledTextCtrl(self, sizer, label, unit, label_width, label_high, readonly=False):
+        box = wx.BoxSizer(wx.HORIZONTAL)
+        # 抬頭
+        lbl = wx.StaticText(self, label=label, size=(label_width, label_high))
+        font = wx.Font(12, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        lbl.SetFont(font)
+        # 單位
+        unit_lbl = wx.StaticText(self, label=unit)
+         # 確認是否為唯獨
+        if readonly :
+            style = wx.TE_READONLY
+            lbl.SetForegroundColour(wx.Colour(255,255,240))
+            unit_lbl.SetForegroundColour(wx.Colour(255,255,240))
+        else:
+            style = 0
+        # 輸入欄
+        txt = wx.TextCtrl(self, size=(100, 20), style=style)
+        # 加入畫面
+        box.Add(lbl, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
+        box.Add(txt, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
+        box.Add(unit_lbl, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
+        # 添加到主布局
+        sizer.Add(box, 0, wx.EXPAND | wx.ALL, 5)
+        return txt
+
+
+    def expression(self, event):
+        try:
+            # 獲取用戶輸入的數值
+            dynamic_load = float(self.dynamic_load.GetValue())
+            bearing_dynamic_load = float(self.bearing_dynamic_load.GetValue())
+            rpm = float(self.rpm.GetValue())
+
+            # 獲取選擇的選項文本
+            selected_option = self.dropdown.GetStringSelection()
+            # 根據選擇的選項獲取對應的係數
+            coefficient = self.options.get(selected_option)
+
+            if coefficient is None:
+                raise ValueError("未選擇有效的選項")
+
+            # 計算基本額定壽命
+            rpm_lifespan = math.pow((dynamic_load / bearing_dynamic_load), coefficient)
+            hour_lifespan = (rpm_lifespan * (10**6)) / (60 * rpm)
+
+            # 顯示結果
+            self.rpm_lifespan.SetValue(f"{round(rpm_lifespan, 2)}")
+            self.hour_lifespan.SetValue(f"{round(hour_lifespan, 2)}")
+
+        except ValueError as e:
+            wx.MessageBox(f"輸入錯誤: {e}", "錯誤", wx.OK | wx.ICON_ERROR)
+        except Exception as e:
+            wx.MessageBox(f"計算錯誤: {e}", "錯誤", wx.OK | wx.ICON_ERROR)
+
+
+
+
+
+# 軸承溫升估算
+class bearing_temp_rise(wx.ScrolledWindow):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.InitUI()
+
+    def InitUI(self):
+        # 畫面長寬設定
+        fixed_size = wx.Size(1200,-1)
+        # 畫面管理器
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        self.SetSizer(sizer)
+        # 添加圖片及文字
+        angular_image_with_text = self.AddTextToImage('images/angular_bearing.jpg', 'images/temperature_rise_icon.jpg')
+        angular_bitmap = wx.StaticBitmap(self, -1, angular_image_with_text)
+        sizer.Add(angular_bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+
+         # 設定按鈕圖案
+        btn_icon = wx.Image("images/submit.png", wx.BITMAP_TYPE_PNG)
+        btn_icon = btn_icon.Scale(60, 60, wx.IMAGE_QUALITY_HIGH)
+        btn_bitmap = wx.Bitmap(btn_icon)
+
+        # 添加計算按鈕
+        calc_button = wx.BitmapButton(self, bitmap=btn_bitmap)
+        calc_button.SetBackgroundColour(wx.Colour(255, 0, 0))
+        # calc_button.Bind(wx.EVT_BUTTON, self.expression)
+        sizer.Add(calc_button, 0, wx.ALIGN_CENTER | wx.TOP, 10)
+
+        # 設置滾動區域
+        self.SetScrollbars(50, 50, 50, 50)  # 設置捲動條，(水平步長, 垂直步長, 水平範圍, 垂直範圍)
+        self.SetScrollRate(20, 20)  # 設置滾動速率
+
+
+    def AddTextToImage(self, image_path, icon_path):
+        # 加載背景圖片
+        bg_image = wx.Image(image_path, wx.BITMAP_TYPE_ANY)
+        # 加載圖標圖片
+        icon_image = wx.Image(icon_path, wx.BITMAP_TYPE_ANY)
+        # 重新調整圖標大小
+        icon_image = icon_image.Scale(100, 150, wx.IMAGE_QUALITY_HIGH)
+        icon_bmp = wx.Bitmap(icon_image)
+        # 創建畫布
+        bmp = wx.Bitmap(bg_image)
+        width, height = bmp.GetSize()
+        # 創建內存DC
+        mem_dc = wx.MemoryDC()
+        mem_dc.SelectObject(bmp)
+        # 繪制圖標到背景圖片
+        icon_width, icon_height = icon_bmp.GetSize()
+        icon_x = 10
+        icon_y = height - icon_height
+        mem_dc.DrawBitmap(icon_bmp, icon_x, icon_y, True)
+        # 清理
+        mem_dc.SelectObject(wx.NullBitmap)
+        # 返回帶有圖標的背景圖片
+        return bmp
+
+
+
+
+# 斜角滾珠軸承壓力預估
+class angular_bearing_pressure(wx.Panel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.InitUI()
+
+    def InitUI(self):
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        self.SetSizer(sizer)
+
+        self.AddLabeledTextCtrl(sizer, "流量：")
+        self.AddLabeledTextCtrl(sizer, "面積：")
+        self.AddLabeledTextCtrl(sizer, "壓力：")
+        self.AddLabeledTextCtrl(sizer, "溫度：")
+
+        calc_button = wx.Button(self, label="送出計算")
+        sizer.Add(calc_button, 0, wx.EXPAND | wx.ALL, 5)
+
+    def AddLabeledTextCtrl(self, sizer, label):
+        box = wx.BoxSizer(wx.HORIZONTAL)
+        lbl = wx.StaticText(self, label=label)
+        txt = wx.TextCtrl(self)
+        box.Add(lbl, 0, wx.ALL, 5)
+        box.Add(txt, 1, wx.ALL, 5)
+        sizer.Add(box, 0, wx.EXPAND | wx.ALL, 5)
+
+
+
+# 斜角滾珠軸承剛性轉速預估
+class angular_bearing_rigidity(wx.Panel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.InitUI()
+
+    def InitUI(self):
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        self.SetSizer(sizer)
+
+        self.AddLabeledTextCtrl(sizer, "流量：")
+        self.AddLabeledTextCtrl(sizer, "面積：")
+        self.AddLabeledTextCtrl(sizer, "壓力：")
+        self.AddLabeledTextCtrl(sizer, "溫度：")
+
+        calc_button = wx.Button(self, label="送出計算")
+        sizer.Add(calc_button, 0, wx.EXPAND | wx.ALL, 5)
+
+    def AddLabeledTextCtrl(self, sizer, label):
+        box = wx.BoxSizer(wx.HORIZONTAL)
+        lbl = wx.StaticText(self, label=label)
+        txt = wx.TextCtrl(self)
+        box.Add(lbl, 0, wx.ALL, 5)
+        box.Add(txt, 1, wx.ALL, 5)
+        sizer.Add(box, 0, wx.EXPAND | wx.ALL, 5)
+
+
+
+# 滾子軸承剛性轉速與遇壓
+class cylindrical_bearing_pressure(wx.Panel):
     def __init__(self, parent):
         super().__init__(parent)
         self.InitUI()
