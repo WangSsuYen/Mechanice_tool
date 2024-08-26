@@ -34,7 +34,7 @@ class SideMenu(wx.Panel):
         self.title.SetFont(font)
         self.title_sizer.Add(self.title, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALL, 5)
 
-        self.formulas = ['螺桿推力', '5V型皮帶', '軸承壽命估算','軸承溫升估算','斜角滾珠軸承壓力預估','斜角滾珠軸承剛性轉速預估','滾子軸承剛性轉速與遇壓']
+        self.formulas = ['螺桿推力', 'V型皮帶', '軸承壽命估算','軸承溫升估算','斜角滾珠軸承壓力預估','斜角滾珠軸承剛性轉速預估','滾子軸承剛性轉速與遇壓']
         for formula in self.formulas:
             btn = wx.Button(self, label=formula)
             btn.Bind(wx.EVT_BUTTON, self.OnFormulaSelected)
@@ -110,7 +110,7 @@ class MainFrame(wx.Frame):
 
         if label == '螺桿推力':
             self.screw_thrust_panel.Show()
-        elif label == '5V型皮帶':
+        elif label == 'V型皮帶':
             self.fiveV_BeltPanel.Show()
         elif label == '軸承壽命估算':
             self.bearing_lifespan.Show()

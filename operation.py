@@ -395,7 +395,7 @@ class bearing_lifespan(wx.ScrolledWindow):
 
     def InitUI(self):
         # 畫面長寬設定
-        fixed_size = wx.Size(1200,-1)
+        fixed_size = wx.Size(900,-1)
         # 畫面管理器
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(sizer)
@@ -423,7 +423,7 @@ class bearing_lifespan(wx.ScrolledWindow):
         bg_sizer.GetStaticBox().SetMinSize(fixed_size)
 
         # 輸入區
-        input_sizer = wx.GridSizer(cols=3, vgap=10, hgap=200)
+        input_sizer = wx.GridSizer(cols=3, vgap=10, hgap=100)
         self.dynamic_load = self.AddLabeledTextCtrl(input_sizer, "額定動負載 ：", "KN", 140, 20)
         self.bearing_dynamic_load = self.AddLabeledTextCtrl(input_sizer, "軸承當量動負載 ：", "KN", 140, 20)
         self.rpm = self.AddLabeledTextCtrl(input_sizer, "轉速 ：", "RPM", 140, 20)
@@ -569,9 +569,41 @@ class bearing_temp_rise(wx.ScrolledWindow):
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(sizer)
         # 添加圖片及文字
-        angular_image_with_text = self.AddTextToImage('images/angular_bearing.jpg', 'images/temperature_rise_icon.jpg')
+        angular_image_with_text = self.MergeImage('images/angular_bearing.jpg', 'images/temperature_rise_icon.jpg')
         angular_bitmap = wx.StaticBitmap(self, -1, angular_image_with_text)
         sizer.Add(angular_bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+
+        # 欄位控制器
+        input_sizer = wx.StaticBoxSizer(wx.StaticBox(self, label="輸入區"), wx.HORIZONTAL)
+        input_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        input_sizer.GetStaticBox().SetFont(input_font)
+        input_sizer.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
+        input_sizer.GetStaticBox().SetMinSize(fixed_size)
+
+        # 圖文欄位
+        text_sizer = wx.GridSizer(cols= 3, vgap=10, hgap=20)
+        text_image = wx.Image('images/friction_coefficient.png', wx.BITMAP_TYPE_PNG)
+        text_image = text_image.Scale(316, 462, wx.IMAGE_QUALITY_HIGH)
+        bitmap = wx.StaticBitmap(self, -1, wx.Bitmap(text_image))
+        text_sizer.Add(bitmap, 0, wx.ALIGN_CENTER|wx.ALL, 10)
+        # 欄位輸入區
+        middel_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.bearing_friction_coefficient = self.AddLabeledTextCtrl(middel_sizer, "軸承摩擦係數 : ", "*查左表", 110, 20)
+        self.bearing_pressured = self.AddLabeledTextCtrl(middel_sizer, "施予軸承壓力: ", "N", 110, 20)
+        self.bearing_outside_diameter = self.AddLabeledTextCtrl(middel_sizer, "外徑 :", "mm", 110, 20)
+        self.bearing_inside_diameter = self.AddLabeledTextCtrl(middel_sizer, "內徑 : ", "mm", 110, 20)
+        self.bearing_rpm = self.AddLabeledTextCtrl(middel_sizer, "軸承轉速 : ", "RPM", 110, 20)
+        self.grease = self.AddLabeledTextCtrl(middel_sizer, "油脂黏度 : ", "mm²/s", 110, 20)
+        self.bearing_count = self.AddLabeledTextCtrl(middel_sizer, "並列軸承數 : ", "個", 110, 20)
+        text_sizer.Add(middel_sizer, 0, wx.ALIGN_CENTER|wx.ALL, 10)
+        # 添加下拉選擇欄位
+        self.AddDropdown(text_sizer)
+
+        # 加入欄位控制器
+        input_sizer.Add(text_sizer, 0, wx.ALIGN_CENTER|wx.ALL, 10)
+        sizer.Add(input_sizer, 0, wx.ALIGN_CENTER|wx.ALL, 10)
+
+
 
          # 設定按鈕圖案
         btn_icon = wx.Image("images/submit.png", wx.BITMAP_TYPE_PNG)
@@ -589,7 +621,26 @@ class bearing_temp_rise(wx.ScrolledWindow):
         self.SetScrollRate(20, 20)  # 設置滾動速率
 
 
-    def AddTextToImage(self, image_path, icon_path):
+    # 下拉選擇器
+    def AddDropdown(self, sizer):
+        # 創建下拉選擇欄位
+        dropdown_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        dropdown_lbl = wx.StaticText(self, label="選擇軸承滾珠類別 ： ", size=(200, 30))
+        dropdown_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        dropdown_lbl.SetFont(dropdown_font)
+        dropdown_lbl.SetForegroundColour(wx.Colour(255,106,106))
+        # 選項
+        self.options = {"鋼珠":1, "陶珠":0.41}
+        # 提取選項
+        self.choices = list(self.options.keys())
+
+        self.dropdown = wx.Choice(self, choices=self.choices, size=(80, 30))
+        dropdown_sizer.Add(dropdown_lbl, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
+        dropdown_sizer.Add(self.dropdown, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
+        sizer.Add(dropdown_sizer, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+
+
+    def MergeImage(self, image_path, icon_path):
         # 加載背景圖片
         bg_image = wx.Image(image_path, wx.BITMAP_TYPE_ANY)
         # 加載圖標圖片
@@ -613,6 +664,31 @@ class bearing_temp_rise(wx.ScrolledWindow):
         # 返回帶有圖標的背景圖片
         return bmp
 
+    # 欄位新增器
+    def AddLabeledTextCtrl(self, sizer, label, unit, label_width, label_high, readonly=False):
+        box = wx.BoxSizer(wx.HORIZONTAL)
+        # 抬頭
+        lbl = wx.StaticText(self, label=label, size=(label_width, label_high))
+        font = wx.Font(12, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        lbl.SetFont(font)
+        # 單位
+        unit_lbl = wx.StaticText(self, label=unit)
+         # 確認是否為唯獨
+        if readonly :
+            style = wx.TE_READONLY
+            lbl.SetForegroundColour(wx.Colour(255,255,240))
+            unit_lbl.SetForegroundColour(wx.Colour(255,255,240))
+        else:
+            style = 0
+        # 輸入欄
+        txt = wx.TextCtrl(self, size=(100, 20), style=style)
+        # 加入畫面
+        box.Add(lbl, 0, wx.ALIGN_CENTER | wx.ALL, 20)
+        box.Add(txt, 0, wx.ALIGN_CENTER | wx.ALL, 20)
+        box.Add(unit_lbl, 0, wx.ALIGN_CENTER | wx.ALL, 20)
+        # 添加到主布局
+        sizer.Add(box, 0, wx.EXPAND | wx.ALL, 5)
+        return txt
 
 
 
