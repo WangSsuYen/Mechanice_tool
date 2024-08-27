@@ -573,39 +573,71 @@ class bearing_temp_rise(wx.ScrolledWindow):
         angular_bitmap = wx.StaticBitmap(self, -1, angular_image_with_text)
         sizer.Add(angular_bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 10)
 
-        # 欄位控制器
+        # 輸入區
         input_sizer = wx.StaticBoxSizer(wx.StaticBox(self, label="輸入區"), wx.HORIZONTAL)
         input_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
         input_sizer.GetStaticBox().SetFont(input_font)
         input_sizer.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
         input_sizer.GetStaticBox().SetMinSize(fixed_size)
-
-        # 圖文欄位
+        # 左側圖文
         text_sizer = wx.GridSizer(cols= 3, vgap=10, hgap=20)
         text_image = wx.Image('images/friction_coefficient.png', wx.BITMAP_TYPE_PNG)
         text_image = text_image.Scale(316, 462, wx.IMAGE_QUALITY_HIGH)
         bitmap = wx.StaticBitmap(self, -1, wx.Bitmap(text_image))
         text_sizer.Add(bitmap, 0, wx.ALIGN_CENTER|wx.ALL, 10)
-        # 欄位輸入區
+        # 中間欄位
         middel_sizer = wx.BoxSizer(wx.VERTICAL)
-        self.bearing_friction_coefficient = self.AddLabeledTextCtrl(middel_sizer, "軸承摩擦係數 : ", "*查左表", 110, 20)
-        self.bearing_pressured = self.AddLabeledTextCtrl(middel_sizer, "施予軸承壓力: ", "N", 110, 20)
-        self.bearing_outside_diameter = self.AddLabeledTextCtrl(middel_sizer, "外徑 :", "mm", 110, 20)
-        self.bearing_inside_diameter = self.AddLabeledTextCtrl(middel_sizer, "內徑 : ", "mm", 110, 20)
-        self.bearing_rpm = self.AddLabeledTextCtrl(middel_sizer, "軸承轉速 : ", "RPM", 110, 20)
-        self.grease = self.AddLabeledTextCtrl(middel_sizer, "油脂黏度 : ", "mm²/s", 110, 20)
-        self.bearing_count = self.AddLabeledTextCtrl(middel_sizer, "並列軸承數 : ", "個", 110, 20)
+        self.bearing_friction_coefficient = self.AddLabeledTextCtrl(middel_sizer, "軸承摩擦係數 : ", "*查左表", 150, 20)
+        self.bearing_pressured = self.AddLabeledTextCtrl(middel_sizer, "施予軸承負荷 : ", "N", 150, 20)
+        self.bearing_outside_diameter = self.AddLabeledTextCtrl(middel_sizer, "外徑 :", "mm", 150, 20)
+        self.bearing_inside_diameter = self.AddLabeledTextCtrl(middel_sizer, "內徑 : ", "mm", 150, 20)
+        self.bearing_rpm = self.AddLabeledTextCtrl(middel_sizer, "軸承轉速 : ", "RPM", 150, 20)
+        self.grease = self.AddLabeledTextCtrl(middel_sizer, "油脂黏度 : ", "mm²/s", 150, 20)
+        self.bearing_count = self.AddLabeledTextCtrl(middel_sizer, "並列軸承數 : ", "個", 150, 20)
+        self.temperature = self.AddLabeledTextCtrl(middel_sizer, "室溫 : ", "°C", 150, 20)
         text_sizer.Add(middel_sizer, 0, wx.ALIGN_CENTER|wx.ALL, 10)
-        # 添加下拉選擇欄位
+        # 右側下拉選擇欄位
         self.AddDropdown(text_sizer)
-
         # 加入欄位控制器
         input_sizer.Add(text_sizer, 0, wx.ALIGN_CENTER|wx.ALL, 10)
         sizer.Add(input_sizer, 0, wx.ALIGN_CENTER|wx.ALL, 10)
 
+        # 輸出欄位
+        output_sizer = wx.StaticBoxSizer(wx.StaticBox(self, label="輸出區"), wx.HORIZONTAL)
+        output_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        output_sizer.GetStaticBox().SetFont(output_font)
+        output_sizer.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
+        output_sizer.GetStaticBox().SetMinSize(fixed_size)
+        output_grid = wx.GridSizer(cols=3, vgap=20, hgap=20)
+        # 輸出左側欄位
+        output_left_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.equivalent_bearing_load = self.AddLabeledTextCtrl(output_left_sizer, "軸承等效負荷 : ", "N", 220, 20, readonly=True)
+        self.average_diameter = self.AddLabeledTextCtrl(output_left_sizer, "軸承平均徑 : ", "mm", 220, 20, readonly=True)
+        self.bearing_torgue = self.AddLabeledTextCtrl(output_left_sizer, "軸承立矩估算 : ", "N-mm", 220, 20, readonly=True)
+        self.bearing_heat = self.AddLabeledTextCtrl(output_left_sizer, "軸承輸出熱量預估 : ", "Kw", 220, 20, readonly=True)
+        self.grease_coefficient = self.AddLabeledTextCtrl(output_left_sizer, "油脂入口剪切作用縮減係數 : ", "", 220, 20, readonly=True)
+        # 輸出中間欄位
+        output_middel_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.total_torgue = self.AddLabeledTextCtrl(output_middel_sizer, "總力矩 : ", "N-mm", 150, 20, readonly=True)
+        self.rotation_coefficient = self.AddLabeledTextCtrl(output_middel_sizer, "軸承滾動係數(Grr) : ", "", 150, 20, readonly=True)
+        self.rotation_torgue = self.AddLabeledTextCtrl(output_middel_sizer, "軸承滾動力矩(Mrr) : ", "N-mm", 150, 20, readonly=True)
+        self.sliding_coefficient = self.AddLabeledTextCtrl(output_middel_sizer, "軸承滑動係數(Gsl) : ", "", 150, 20, readonly=True)
+        self.sliding_torgue = self.AddLabeledTextCtrl(output_middel_sizer, "軸承滑動力矩(Msl) : ", "N-mm", 150, 20, readonly=True)
+        # 輸出右側欄位
+        output_right_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.signle_bearing_heat = self.AddLabeledTextCtrl(output_right_sizer, "單列軸承總輸出熱量 : ", "W", 150, 20, readonly=True)
+        self.windcooling_temp = self.AddLabeledTextCtrl(output_right_sizer, "軸承溫度(風冷) : ", "°C", 150, 20, readonly=True)
+        self.windcooling_tempterature_rise = self.AddLabeledTextCtrl(output_right_sizer, "溫升(風冷) : ", "°C", 150, 20, readonly=True)
+        self.oilcooling_temp = self.AddLabeledTextCtrl(output_right_sizer, "軸承溫度(油冷) : ", "°C", 150, 20, readonly=True)
+        self.oilcooling_tempterature_rise = self.AddLabeledTextCtrl(output_right_sizer, "溫升(油冷) : ", "°C", 150, 20, readonly=True)
+        output_grid.Add(output_left_sizer, 0, wx.ALIGN_CENTER|wx.ALL, 10)
+        output_grid.Add(output_middel_sizer, 0, wx.ALIGN_CENTER|wx.ALL, 10)
+        output_grid.Add(output_right_sizer, 0, wx.ALIGN_CENTER|wx.ALL, 10)
+        output_sizer.Add(output_grid, 0, wx.ALIGN_CENTER|wx.ALL, 10)
+        sizer.Add(output_sizer, 0, wx.ALIGN_CENTER|wx.ALL, 10)
 
 
-         # 設定按鈕圖案
+        # 設定按鈕圖案
         btn_icon = wx.Image("images/submit.png", wx.BITMAP_TYPE_PNG)
         btn_icon = btn_icon.Scale(60, 60, wx.IMAGE_QUALITY_HIGH)
         btn_bitmap = wx.Bitmap(btn_icon)
@@ -613,7 +645,7 @@ class bearing_temp_rise(wx.ScrolledWindow):
         # 添加計算按鈕
         calc_button = wx.BitmapButton(self, bitmap=btn_bitmap)
         calc_button.SetBackgroundColour(wx.Colour(255, 0, 0))
-        # calc_button.Bind(wx.EVT_BUTTON, self.expression)
+        calc_button.Bind(wx.EVT_BUTTON, self.experssion)
         sizer.Add(calc_button, 0, wx.ALIGN_CENTER | wx.TOP, 10)
 
         # 設置滾動區域
@@ -664,6 +696,7 @@ class bearing_temp_rise(wx.ScrolledWindow):
         # 返回帶有圖標的背景圖片
         return bmp
 
+
     # 欄位新增器
     def AddLabeledTextCtrl(self, sizer, label, unit, label_width, label_high, readonly=False):
         box = wx.BoxSizer(wx.HORIZONTAL)
@@ -683,40 +716,172 @@ class bearing_temp_rise(wx.ScrolledWindow):
         # 輸入欄
         txt = wx.TextCtrl(self, size=(100, 20), style=style)
         # 加入畫面
-        box.Add(lbl, 0, wx.ALIGN_CENTER | wx.ALL, 20)
-        box.Add(txt, 0, wx.ALIGN_CENTER | wx.ALL, 20)
-        box.Add(unit_lbl, 0, wx.ALIGN_CENTER | wx.ALL, 20)
+        box.Add(lbl, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        box.Add(txt, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        box.Add(unit_lbl, 0, wx.ALIGN_CENTER | wx.ALL, 10)
         # 添加到主布局
         sizer.Add(box, 0, wx.EXPAND | wx.ALL, 5)
         return txt
 
 
+    def experssion(self,event):
+        try :
+            # 獲取選擇的選項
+            selected_option = self.dropdown.GetStringSelection()
+            # 根據選擇的選項獲取對應的係數
+            bead_coefficient = self.options.get(selected_option)
+            if bead_coefficient is None:
+                raise ValueError("未選擇有效的選項")
+            # 取值
+            bearing_friction_coefficient = float(self.bearing_friction_coefficient.GetValue())
+            bearing_pressured = float(self.bearing_pressured.GetValue())
+            bearing_outside_diameter = float(self.bearing_outside_diameter.GetValue())
+            bearing_inside_diameter = float(self.bearing_inside_diameter.GetValue())
+            bearing_rpm = float(self.bearing_rpm.GetValue())
+            grease = float(self.grease.GetValue())
+            bearing_count = float(self.bearing_count.GetValue())
+            temperature = float(self.temperature.GetValue())
+            # 演算
+            equivalent_bearing_load = bearing_pressured * 0.1
+            average_diameter = (bearing_inside_diameter + bearing_outside_diameter)/2
+            bearing_torgue = bearing_friction_coefficient * equivalent_bearing_load * bearing_inside_diameter * 0.5
+            bearing_heat = 1.05 * 10**(-4) * bearing_torgue * bearing_rpm /1000
+            grease_coefficient = 1 / (1 + (1.84 * 10 ** (1 / 9)) * ((bearing_rpm * average_diameter) ** 1.28) * (grease ** 0.64))
+            rotation_coefficient = (5.03 * 10 ** (-12)) * (average_diameter ** 1.97) * (((equivalent_bearing_load * (1.9 * 10 ** (-12)) * bead_coefficient * (average_diameter ** 4) * (bearing_rpm ** 2)) + (1.97 * bearing_pressured)) ** 0.54)
+            rotation_torgue = rotation_coefficient * (bearing_rpm * grease)**0.6
+            relay_opertion = float((bead_coefficient * 1.91 * 10 ** (-12)) * (average_diameter ** 4) * (bearing_rpm ** 2)) # 中繼運算
+            sliding_coefficient = (1.3 * 10 ** (-2)) * (average_diameter ** 0.26) * (((equivalent_bearing_load + relay_opertion) ** (4 / 3)) + (0.68 * (bearing_pressured ** (4 / 3))))
+            sliding_torgue = sliding_coefficient *0.05
+            total_torgue = (1 - (1 / (math.e ** (0.00000006 * grease * bearing_rpm * (bearing_outside_diameter + bearing_inside_diameter) * (4.4 / (2 * (bearing_outside_diameter - bearing_inside_diameter)) ** 0.5)))) * 0.05 + 0 * 0.15) * sliding_coefficient * grease_coefficient + sliding_torgue
+            signle_bearing_heat = 1.05 * 10 ** (-4) * total_torgue * bearing_rpm
+            windcooling_temp =  (temperature + (signle_bearing_heat / (1 * (bearing_outside_diameter ** 1.25) * ((0.0013 * 0.024) ** 0.33)))) * (1 + bearing_count * 0.147)
+            windcooling_tempterature_rise = windcooling_temp - temperature
+            oilcooling_temp = (temperature + (signle_bearing_heat / (1 * (bearing_outside_diameter ** 1.25) * ((0.88 * 1.97) ** 0.33)))) * (1 + bearing_count * 0.147)
+            oilcooling_tempterature_rise = oilcooling_temp - temperature
+            # 鋪陳
+            self.equivalent_bearing_load.SetValue(f"{round(equivalent_bearing_load, 2)}")
+            self.average_diameter.SetValue(f"{round(average_diameter, 2)}")
+            self.bearing_torgue.SetValue(f"{round(bearing_torgue, 2)}")
+            self.bearing_heat.SetValue(f"{round(bearing_heat, 6)}")
+            self.grease_coefficient.SetValue(f"{round(grease_coefficient, 12)}")
+            self.total_torgue.SetValue(f"{round(total_torgue, 2)}")
+            self.rotation_coefficient.SetValue(f"{round(rotation_coefficient, 6)}")
+            self.rotation_torgue.SetValue(f"{round(rotation_torgue, 6)}")
+            self.sliding_coefficient.SetValue(f"{round(sliding_coefficient, 2)}")
+            self.sliding_torgue.SetValue(f"{round(sliding_torgue, 2)}")
+            self.signle_bearing_heat.SetValue(f"{round(signle_bearing_heat, 2)}")
+            self.windcooling_temp.SetValue(f"{round(windcooling_temp, 2)}")
+            self.windcooling_tempterature_rise.SetValue(f"{round(windcooling_tempterature_rise, 2)}")
+            self.oilcooling_temp.SetValue(f"{round(oilcooling_temp, 2)}")
+            self.oilcooling_tempterature_rise.SetValue(f"{round(oilcooling_tempterature_rise, 2)}")
+
+        except ValueError as e:
+            wx.MessageBox(f"輸入錯誤: {e}", "錯誤", wx.OK | wx.ICON_ERROR)
+        except Exception as e:
+            wx.MessageBox(f"計算錯誤: {e}", "錯誤", wx.OK | wx.ICON_ERROR)
+
+
+
 
 # 斜角滾珠軸承壓力預估
-class angular_bearing_pressure(wx.Panel):
+class angular_bearing_pressure(wx.ScrolledWindow):
     def __init__(self, parent):
         super().__init__(parent)
         self.InitUI()
 
     def InitUI(self):
+        # 畫面長寬設定
+        fixed_size = wx.Size(1200,-1)
+        # 畫面管理器
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(sizer)
 
-        self.AddLabeledTextCtrl(sizer, "流量：")
-        self.AddLabeledTextCtrl(sizer, "面積：")
-        self.AddLabeledTextCtrl(sizer, "壓力：")
-        self.AddLabeledTextCtrl(sizer, "溫度：")
+        base_bg = wx.GridSizer(cols=2, vgap=10, hgap=50)
+        self.base_reload = self.AddLabeledTextCtrl(base_bg, "基本預壓力(DF、DB) : ", "N", 180, 20, remark="※查原廠型錄")
+        self.axial_rigidity = self.AddLabeledTextCtrl(base_bg, "軸向剛性 : ", "N/µm", 180, 20, remark="※查原廠型錄")
+        sizer.Add(base_bg, 0, wx.ALIGN_CENTER|wx.ALL, 10)
 
-        calc_button = wx.Button(self, label="送出計算")
-        sizer.Add(calc_button, 0, wx.EXPAND | wx.ALL, 5)
+        # 定衛預壓與速度係數
+        position_and_speed_bg = wx.StaticBoxSizer(wx.StaticBox(self, label="定位預壓與速度係數"), wx.HORIZONTAL)
+        position_and_speed_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        position_and_speed_bg.GetStaticBox().SetFont(position_and_speed_font)
+        position_and_speed_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
+        position_and_speed_bg.GetStaticBox().SetMinSize(fixed_size)
+        # 圖片示意
+        position_and_speed_image = wx.Image('images/Positioning_preload_and_speed_coefficient.png', wx.BITMAP_TYPE_PNG)
+        position_and_speed_image = position_and_speed_image.Scale(461, 176, wx.IMAGE_QUALITY_HIGH)
+        bitmap = wx.StaticBitmap(self, -1, wx.Bitmap(position_and_speed_image))
+        # 加入圖框
+        position_and_speed_bg.Add(bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        # 欄位
+        self.position_and_speed = self.AddLabeledTextCtrl(position_and_speed_bg, "定位預壓與速度係數 : ", "", 150, 20, remark="※查左表")
+        sizer.Add(position_and_speed_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
 
-    def AddLabeledTextCtrl(self, sizer, label):
-        box = wx.BoxSizer(wx.HORIZONTAL)
-        lbl = wx.StaticText(self, label=label)
-        txt = wx.TextCtrl(self)
-        box.Add(lbl, 0, wx.ALL, 5)
-        box.Add(txt, 1, wx.ALL, 5)
-        sizer.Add(box, 0, wx.EXPAND | wx.ALL, 5)
+
+
+
+        # 設定按鈕圖案
+        btn_icon = wx.Image("images/submit.png", wx.BITMAP_TYPE_PNG)
+        btn_icon = btn_icon.Scale(60, 60, wx.IMAGE_QUALITY_HIGH)
+        btn_bitmap = wx.Bitmap(btn_icon)
+
+        # 添加計算按鈕
+        calc_button = wx.BitmapButton(self, bitmap=btn_bitmap)
+        calc_button.SetBackgroundColour(wx.Colour(255, 0, 0))
+        # calc_button.Bind(wx.EVT_BUTTON, self.experssion)
+        sizer.Add(calc_button, 0, wx.ALIGN_CENTER | wx.TOP, 10)
+
+        # 設置滾動區域
+        self.SetScrollbars(50, 50, 50, 50)  # 設置捲動條，(水平步長, 垂直步長, 水平範圍, 垂直範圍)
+        self.SetScrollRate(20, 20)  # 設置滾動速率
+
+
+
+    # 欄位新增器
+    def AddLabeledTextCtrl(self, sizer, label, unit, label_width, label_high, readonly=False, remark=False):
+        # 抬頭
+        lbl = wx.StaticText(self, label=label, size=(label_width, label_high))
+        font = wx.Font(12, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        lbl.SetFont(font)
+        # 單位
+        unit_lbl = wx.StaticText(self, label=unit)
+         # 確認是否為唯獨
+        if readonly :
+            style = wx.TE_READONLY
+            lbl.SetForegroundColour(wx.Colour(255,255,240))
+            unit_lbl.SetForegroundColour(wx.Colour(255,255,240))
+        else:
+            style = 0
+        # 輸入欄
+        txt = wx.TextCtrl(self, size=(100, 20), style=style)
+        # 加入畫面
+
+        # 備註欄
+        if remark :
+            remark_grid = wx.BoxSizer(wx.VERTICAL)# 備註與欄位垂直
+            lbl_box = wx.BoxSizer(wx.HORIZONTAL)  # 欄位水平排列
+            lbl_box.Add(lbl, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+            lbl_box.Add(txt, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+            lbl_box.Add(unit_lbl, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+            remark_grid.Add(lbl_box, 0, wx.ALIGN_CENTER|wx.ALL, 10)
+
+            remark_lbl = wx.StaticText(self, label=remark)
+            remark_font = wx.Font(8, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+            remark_lbl.SetForegroundColour(wx.Colour(255,0,0))
+            remark_lbl.SetFont(remark_font)
+            remark_grid.Add(remark_lbl, 0, wx.ALIGN_CENTER|wx.LEFT, 150)
+            # 添加到主布局
+            sizer.Add(remark_grid, 0, wx.EXPAND | wx.ALL, 5)
+
+        else:
+            box = wx.BoxSizer(wx.HORIZONTAL)
+            box.Add(lbl, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+            box.Add(txt, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+            box.Add(unit_lbl, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+
+            sizer.Add(box, 0, wx.EXPAND | wx.ALL, 5)
+
+        return txt
 
 
 
