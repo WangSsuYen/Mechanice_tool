@@ -1,4 +1,4 @@
-import wx, math
+import wx, math, wx.adv
 from data import *
 
 # 螺桿推力計算
@@ -796,28 +796,120 @@ class angular_bearing_pressure(wx.ScrolledWindow):
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(sizer)
 
-        base_bg = wx.GridSizer(cols=2, vgap=10, hgap=50)
-        self.base_reload = self.AddLabeledTextCtrl(base_bg, "基本預壓力(DF、DB) : ", "N", 180, 20, remark="※查原廠型錄")
-        self.axial_rigidity = self.AddLabeledTextCtrl(base_bg, "軸向剛性 : ", "N/µm", 180, 20, remark="※查原廠型錄")
+        # 載入GIF
+        animation = wx.adv.Animation('images/navbar.gif')
+        gif_ctrl = wx.adv.AnimationCtrl(self, -1, animation)
+        # 設定GIF自動撥放
+        gif_ctrl.Play()
+        sizer.Add(gif_ctrl, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+
+        # 軸承基本設定欄位
+        base_bg = wx.StaticBoxSizer(wx.StaticBox(self, label="基礎設定"), wx.HORIZONTAL)
+        base_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        base_bg.GetStaticBox().SetFont(base_font)
+        base_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
+        base_sizer = wx.GridSizer(cols=3, vgap=10, hgap=100)
+        self.base_reload = self.AddLabeledTextCtrl(base_sizer, "基本預壓力(DF、DB) : ", "N", 200, 20, remark="※查原廠型錄")
+        self.base_axial_rigidity = self.AddLabeledTextCtrl(base_sizer, "軸向剛性 : ", "N/µm", 80, 20, remark="※查原廠型錄")
+        self.base_allowable_rpm = self.AddLabeledTextCtrl(base_sizer, "軸承容許轉速 : ", "RPM", 120, 20, remark="※查原廠型錄")
+        base_bg.Add(base_sizer, 0, wx.ALIGN_CENTER|wx.ALL, 10)
         sizer.Add(base_bg, 0, wx.ALIGN_CENTER|wx.ALL, 10)
 
-        # 定衛預壓與速度係數
+        # 定位預壓與速度係數
         position_and_speed_bg = wx.StaticBoxSizer(wx.StaticBox(self, label="定位預壓與速度係數"), wx.HORIZONTAL)
         position_and_speed_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
         position_and_speed_bg.GetStaticBox().SetFont(position_and_speed_font)
         position_and_speed_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
         position_and_speed_bg.GetStaticBox().SetMinSize(fixed_size)
+        position_and_speed_sizer = wx.GridSizer(cols=2, vgap=20, hgap=150)
         # 圖片示意
         position_and_speed_image = wx.Image('images/Positioning_preload_and_speed_coefficient.png', wx.BITMAP_TYPE_PNG)
         position_and_speed_image = position_and_speed_image.Scale(461, 176, wx.IMAGE_QUALITY_HIGH)
         bitmap = wx.StaticBitmap(self, -1, wx.Bitmap(position_and_speed_image))
-        # 加入圖框
-        position_and_speed_bg.Add(bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        position_and_speed_sizer.Add(bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 10)
         # 欄位
-        self.position_and_speed = self.AddLabeledTextCtrl(position_and_speed_bg, "定位預壓與速度係數 : ", "", 150, 20, remark="※查左表")
+        vertical_text = wx.BoxSizer(wx.VERTICAL)
+        self.db_position_and_speed = self.AddLabeledTextCtrl(vertical_text, "定位預壓與速度係數(DB、DF) : ", "", 300, 20, remark="※查左表")
+        self.dbd_position_and_speed = self.AddLabeledTextCtrl(vertical_text, "定位預壓與速度係數(DBD、DFD) : ", "", 300, 20, remark="※查左表")
+        self.dbb_position_and_speed = self.AddLabeledTextCtrl(vertical_text, "定位預壓與速度係數(DBB、DFF) : ", "", 300, 20, remark="※查左表")
+        self.dbbd_position_and_speed = self.AddLabeledTextCtrl(vertical_text, "定位預壓與速度係數(DBBD、DFFD) : ", "", 300, 20, remark="※查左表")
+        position_and_speed_sizer.Add(vertical_text, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        position_and_speed_bg.Add(position_and_speed_sizer, 0, wx.ALIGN_CENTER | wx.ALL, 10)
         sizer.Add(position_and_speed_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
 
+        # 定位預壓係數
+        preload_bg = wx.StaticBoxSizer(wx.StaticBox(self, label="預壓係數"), wx.HORIZONTAL)
+        preload_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        preload_bg.GetStaticBox().SetFont(preload_font)
+        preload_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
+        preload_bg.GetStaticBox().SetMinSize(fixed_size)
+        preload_sizer = wx.GridSizer(cols=2, vgap=20, hgap=150)
+        # 圖片
+        preload_image = wx.Image('images/preload_coefficient.jpg', wx.BITMAP_TYPE_JPEG)
+        preload_image = preload_image.Scale(461, 164, wx.IMAGE_QUALITY_HIGH)
+        bitmap = wx.StaticBitmap(self, -1, wx.Bitmap(preload_image))
+        preload_sizer.Add(bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        # 欄位
+        self.preload_coefficient = self.AddLabeledTextCtrl(preload_sizer, "預壓係數 : ", "", 80, 20, remark="※查左表")
+        preload_bg.Add(preload_sizer, 0, wx.EXPAND | wx.ALL, 10)
+        sizer.Add(preload_bg, 0, wx.ALIGN_CENTER | wx.ALL, 10)
 
+        # DB、DF輸出
+        db_bg = wx.StaticBoxSizer(wx.StaticBox(self, label="DB、DF組合"), wx.HORIZONTAL)
+        db_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        db_bg.GetStaticBox().SetFont(db_font)
+        db_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
+        db_bg.GetStaticBox().SetMinSize(fixed_size)
+        db_sizer = wx.GridSizer(cols=2, vgap=20, hgap=300)
+        self.db_radial_rigidity = self.AddLabeledTextCtrl(db_sizer, "徑向剛性 : ", "N/µm", 120, 20, readonly=True)
+        self.db_allowable_rpm = self.AddLabeledTextCtrl(db_sizer, "容許轉速 : ", "RPM", 120, 20, readonly=True)
+        db_bg.Add(db_sizer, 0, wx.EXPAND|wx.ALL, 10)
+        sizer.Add(db_bg, 0, wx.ALIGN_CENTER|wx.ALL, 10)
+
+        # DBD、DFD輸出
+        dbd_bg = wx.StaticBoxSizer(wx.StaticBox(self, label="DBD、DFD組合"), wx.HORIZONTAL)
+        dbd_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        dbd_bg.GetStaticBox().SetFont(dbd_font)
+        dbd_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
+        dbd_bg.GetStaticBox().SetMinSize(fixed_size)
+        dbd_sizer = wx.GridSizer(cols=2, vgap=20, hgap=300)
+        self.dbd_valid_preload = self.AddLabeledTextCtrl(dbd_sizer, "有效預壓力 : ", "N", 100, 20, readonly=True)
+        self.dbd_allowable_rpm = self.AddLabeledTextCtrl(dbd_sizer, "容許轉速 : ", "RPM", 100, 20, readonly=True)
+        self.dbd_radial_rigidity = self.AddLabeledTextCtrl(dbd_sizer, "徑向剛性 : ", "N/µm", 100, 20, readonly=True)
+        self.dbd_axial_rigidity = self.AddLabeledTextCtrl(dbd_sizer, "軸向剛性 : ", "N/µm", 100, 20, readonly=True)
+
+        dbd_bg.Add(dbd_sizer, 0, wx.EXPAND|wx.ALL, 10)
+        sizer.Add(dbd_bg, 0, wx.ALIGN_CENTER|wx.ALL, 10)
+
+        # DBB、DFF輸出
+        dbb_bg = wx.StaticBoxSizer(wx.StaticBox(self, label="DBB、DFF組合"), wx.HORIZONTAL)
+        dbb_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        dbb_bg.GetStaticBox().SetFont(dbb_font)
+        dbb_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
+        dbb_bg.GetStaticBox().SetMinSize(fixed_size)
+        dbb_sizer = wx.GridSizer(cols=2, vgap=20, hgap=300)
+        self.dbb_valid_preload = self.AddLabeledTextCtrl(dbb_sizer, "有效預壓力 : ", "N", 100, 20, readonly=True)
+        self.dbb_allowable_rpm = self.AddLabeledTextCtrl(dbb_sizer, "容許轉速 : ", "RPM", 100, 20, readonly=True)
+        self.dbb_radial_rigidity = self.AddLabeledTextCtrl(dbb_sizer, "徑向剛性 : ", "N/µm", 100, 20, readonly=True)
+        self.dbb_axial_rigidity = self.AddLabeledTextCtrl(dbb_sizer, "軸向剛性 : ", "N/µm", 100, 20, readonly=True)
+
+        dbb_bg.Add(dbb_sizer, 0, wx.EXPAND|wx.ALL, 10)
+        sizer.Add(dbb_bg, 0, wx.ALIGN_CENTER|wx.ALL, 10)
+
+        # DBBD、DFFD輸出
+        dbbd_bg = wx.StaticBoxSizer(wx.StaticBox(self, label="DBBD、DFFD組合"), wx.HORIZONTAL)
+        dbbd_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        dbbd_bg.GetStaticBox().SetFont(dbbd_font)
+        dbbd_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
+        dbbd_bg.GetStaticBox().SetMinSize(fixed_size)
+        dbbd_sizer = wx.GridSizer(cols=2, vgap=20, hgap=300)
+        self.dbbd_valid_preload = self.AddLabeledTextCtrl(dbbd_sizer, "有效預壓力 : ", "N", 100, 20, readonly=True)
+        self.dbbd_allowable_rpm = self.AddLabeledTextCtrl(dbbd_sizer, "容許轉速 : ", "RPM", 100, 20, readonly=True)
+        self.dbbd_radial_rigidity = self.AddLabeledTextCtrl(dbbd_sizer, "徑向剛性 : ", "N/µm", 100, 20, readonly=True)
+        self.dbbd_axial_rigidity = self.AddLabeledTextCtrl(dbbd_sizer, "軸向剛性 : ", "N/µm", 100, 20, readonly=True)
+
+        dbbd_bg.Add(dbbd_sizer, 0, wx.EXPAND|wx.ALL, 10)
+        sizer.Add(dbbd_bg, 0, wx.ALIGN_CENTER|wx.ALL, 10)
 
 
         # 設定按鈕圖案
@@ -828,7 +920,7 @@ class angular_bearing_pressure(wx.ScrolledWindow):
         # 添加計算按鈕
         calc_button = wx.BitmapButton(self, bitmap=btn_bitmap)
         calc_button.SetBackgroundColour(wx.Colour(255, 0, 0))
-        # calc_button.Bind(wx.EVT_BUTTON, self.experssion)
+        calc_button.Bind(wx.EVT_BUTTON, self.experssion)
         sizer.Add(calc_button, 0, wx.ALIGN_CENTER | wx.TOP, 10)
 
         # 設置滾動區域
@@ -860,29 +952,108 @@ class angular_bearing_pressure(wx.ScrolledWindow):
         if remark :
             remark_grid = wx.BoxSizer(wx.VERTICAL)# 備註與欄位垂直
             lbl_box = wx.BoxSizer(wx.HORIZONTAL)  # 欄位水平排列
-            lbl_box.Add(lbl, 0, wx.ALIGN_CENTER | wx.ALL, 10)
-            lbl_box.Add(txt, 0, wx.ALIGN_CENTER | wx.ALL, 10)
-            lbl_box.Add(unit_lbl, 0, wx.ALIGN_CENTER | wx.ALL, 10)
-            remark_grid.Add(lbl_box, 0, wx.ALIGN_CENTER|wx.ALL, 10)
+            lbl_box.Add(lbl, 0, wx.ALIGN_CENTER | wx.ALL, 0)
+            lbl_box.Add(txt, 0, wx.ALIGN_CENTER | wx.ALL, 0)
+            lbl_box.Add(unit_lbl, 0, wx.ALIGN_CENTER | wx.ALL, 0)
+            remark_grid.Add(lbl_box, 0, wx.ALIGN_CENTER|wx.ALL, 0)
 
             remark_lbl = wx.StaticText(self, label=remark)
             remark_font = wx.Font(8, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
             remark_lbl.SetForegroundColour(wx.Colour(255,0,0))
             remark_lbl.SetFont(remark_font)
-            remark_grid.Add(remark_lbl, 0, wx.ALIGN_CENTER|wx.LEFT, 150)
+            remark_grid.Add(remark_lbl, 0, wx.ALIGN_CENTER|wx.LEFT, label_width)
             # 添加到主布局
-            sizer.Add(remark_grid, 0, wx.EXPAND | wx.ALL, 5)
+            sizer.Add(remark_grid, 0, wx.EXPAND | wx.ALL, 10)
 
         else:
             box = wx.BoxSizer(wx.HORIZONTAL)
-            box.Add(lbl, 0, wx.ALIGN_CENTER | wx.ALL, 10)
-            box.Add(txt, 0, wx.ALIGN_CENTER | wx.ALL, 10)
-            box.Add(unit_lbl, 0, wx.ALIGN_CENTER | wx.ALL, 10)
-
-            sizer.Add(box, 0, wx.EXPAND | wx.ALL, 5)
+            box.Add(lbl, 0, wx.ALIGN_CENTER | wx.ALL, 0)
+            box.Add(txt, 0, wx.ALIGN_CENTER | wx.ALL, 0)
+            box.Add(unit_lbl, 0, wx.ALIGN_CENTER | wx.ALL, 0)
+            # 添加到主布局
+            sizer.Add(box, 0, wx.EXPAND  | wx.ALL, 10)
 
         return txt
 
+    def experssion(self, event):
+        try:
+            # 取值
+            base_reload = float(self.base_reload.GetValue())
+            base_axial_rigidity = float(self.base_axial_rigidity.GetValue())
+            preload_coefficient = float(self.preload_coefficient.GetValue())
+            base_allowable_rpm = float(self.base_allowable_rpm.GetValue())
+            db_position_and_speed = self.db_position_and_speed.GetValue()
+            dbd_position_and_speed = self.dbd_position_and_speed.GetValue()
+            dbb_position_and_speed = self.dbb_position_and_speed.GetValue()
+            dbbd_position_and_speed = self.dbbd_position_and_speed.GetValue()
+            # 演算
+            db_radial_rigidity = preload_coefficient * base_axial_rigidity
+            db_allowable_rpm = base_allowable_rpm * float(db_position_and_speed)
+
+            # 鋪陳
+            self.db_radial_rigidity.SetValue(f"{round(db_radial_rigidity, 2)}")
+            self.db_allowable_rpm.SetValue(f"{round(db_allowable_rpm, 2)}")
+
+            if dbd_position_and_speed :
+                # 運算
+                dbd_valid_preload = 1.36 * base_reload
+                dbd_allowable_rpm = base_allowable_rpm * float(dbd_position_and_speed)
+                dbd_radial_rigidity = 1.54 *db_radial_rigidity
+                dbd_axial_rigidity = 1.48 * base_axial_rigidity
+                # 鋪陳
+                self.dbd_valid_preload.SetValue(f"{round(dbd_valid_preload, 2)}")
+                self.dbd_allowable_rpm.SetValue(f"{round(dbd_allowable_rpm, 2)}")
+                self.dbd_radial_rigidity.SetValue(f"{round(dbd_radial_rigidity, 2)}")
+                self.dbd_axial_rigidity.SetValue(f"{round(dbd_axial_rigidity, 2)}")
+            else:
+                # 如果dbd_position_and_speed是0，則清空相關欄位
+                self.dbd_valid_preload.SetValue("")
+                self.dbd_allowable_rpm.SetValue("")
+                self.dbd_radial_rigidity.SetValue("")
+                self.dbd_axial_rigidity.SetValue("")
+
+            if dbb_position_and_speed :
+                # 運算
+                dbb_valid_preload = 2 * base_reload
+                dbb_allowable_rpm = base_allowable_rpm * float(dbb_position_and_speed)
+                dbb_radial_rigidity = 2 * db_radial_rigidity
+                dbb_axial_rigidity = 2 * base_axial_rigidity
+                # 鋪陳
+                self.dbb_valid_preload.SetValue(f"{round(dbb_valid_preload, 2)}")
+                self.dbb_allowable_rpm.SetValue(f"{round(dbb_allowable_rpm, 2)}")
+                self.dbb_radial_rigidity.SetValue(f"{round(dbb_radial_rigidity, 2)}")
+                self.dbb_axial_rigidity.SetValue(f"{round(dbb_axial_rigidity, 2)}")
+            else:
+                # 如果dbb_position_and_speed是0，則清空相關欄位
+                self.dbb_valid_preload.SetValue("")
+                self.dbb_allowable_rpm.SetValue("")
+                self.dbb_radial_rigidity.SetValue("")
+                self.dbb_axial_rigidity.SetValue("")
+
+            if dbbd_position_and_speed :
+                # 運算
+                dbbd_valid_preload = 2.3 * base_reload
+                dbbd_allowable_rpm = base_allowable_rpm * float(dbbd_position_and_speed)
+                dbbd_radial_rigidity = 2.64 * db_radial_rigidity
+                dbbd_axial_rigidity = 2.64 * base_axial_rigidity
+                # 鋪陳
+                self.dbbd_valid_preload.SetValue(f"{round(dbbd_valid_preload, 2)}")
+                self.dbbd_allowable_rpm.SetValue(f"{round(dbbd_allowable_rpm, 2)}")
+                self.dbbd_radial_rigidity.SetValue(f"{round(dbbd_radial_rigidity, 2)}")
+                self.dbbd_axial_rigidity.SetValue(f"{round(dbbd_axial_rigidity, 2)}")
+            else :
+                # 如果dbbd_position_and_speed是0，則清空相關欄位
+                self.dbbd_valid_preload.SetValue("")
+                self.dbbd_allowable_rpm.SetValue("")
+                self.dbbd_radial_rigidity.SetValue("")
+                self.dbbd_axial_rigidity.SetValue("")
+
+
+
+        except ValueError as e:
+            wx.MessageBox(f"輸入錯誤: {e}", "錯誤", wx.OK | wx.ICON_ERROR)
+        except Exception as e:
+            wx.MessageBox(f"計算錯誤: {e}", "錯誤", wx.OK | wx.ICON_ERROR)
 
 
 # 斜角滾珠軸承剛性轉速預估
