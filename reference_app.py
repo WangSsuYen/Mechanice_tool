@@ -1,5 +1,16 @@
 import wx, traceback
 from operation import *
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from model import *
+
+
+# 設置 SQLAlchemy 連接
+DATABASE_URI = 'sqlite:///mechanics_tools.db'
+engine = create_engine(DATABASE_URI)
+Base.metadata.bind = engine
+DBSession = sessionmaker(bind=engine)
+session = DBSession()
 
 
 # 側畫面
@@ -12,7 +23,7 @@ class SideMenu(wx.Panel):
     def InitUI(self):
         # 背景、視窗大小設定
         self.SetBackgroundColour(wx.Colour(0, 255, 255))
-        self.SetMinSize((200, 0))
+        self.SetMinSize((300, 0))
 
         # 視窗管理器
         self.sizer = wx.BoxSizer(wx.VERTICAL)
@@ -34,7 +45,7 @@ class SideMenu(wx.Panel):
         self.title.SetFont(font)
         self.title_sizer.Add(self.title, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALL, 5)
 
-        self.formulas = ['螺桿推力', 'V型皮帶', '軸承壽命估算','軸承溫升估算','斜角滾珠軸承壓力預估','斜角滾珠軸承剛性轉速預估','滾子軸承剛性轉速與遇壓']
+        self.formulas = ['螺桿推力', 'V型皮帶', '軸承壽命估算','軸承溫升估算','斜角滾珠軸承預壓力與剛性轉速預估']
         for formula in self.formulas:
             btn = wx.Button(self, label=formula)
             btn.Bind(wx.EVT_BUTTON, self.OnFormulaSelected)
@@ -73,8 +84,6 @@ class MainFrame(wx.Frame):
         self.bearing_lifespan = bearing_lifespan(self.panel)
         self.bearing_temp_rise = bearing_temp_rise(self.panel)
         self.angular_bearing_pressure = angular_bearing_pressure(self.panel)
-        self.angular_bearing_rigidity = angular_bearing_rigidity(self.panel)
-        self.cylindrical_bearing_pressure = cylindrical_bearing_pressure(self.panel)
 
         # 類別匯入主頁
         self.main_sizer.Add(self.screw_thrust_panel, 1, wx.EXPAND | wx.ALL, 5)
@@ -82,8 +91,6 @@ class MainFrame(wx.Frame):
         self.main_sizer.Add(self.bearing_lifespan, 1, wx.EXPAND | wx.ALL, 5)
         self.main_sizer.Add(self.bearing_temp_rise, 1, wx.EXPAND | wx.ALL, 5)
         self.main_sizer.Add(self.angular_bearing_pressure, 1, wx.EXPAND | wx.ALL, 5)
-        self.main_sizer.Add(self.angular_bearing_rigidity, 1, wx.EXPAND | wx.ALL, 5)
-        self.main_sizer.Add(self.cylindrical_bearing_pressure, 1, wx.EXPAND | wx.ALL, 5)
 
         # 其他類別隱藏
         self.screw_thrust_panel.Hide()
@@ -91,8 +98,6 @@ class MainFrame(wx.Frame):
         self.bearing_lifespan.Hide()
         self.bearing_temp_rise.Hide()
         self.angular_bearing_pressure.Hide()
-        self.angular_bearing_rigidity.Hide()
-        self.cylindrical_bearing_pressure.Hide()
 
         self.SetTitle('Yang Iron Mechanice Tools')
         self.Maximize(True)
@@ -105,8 +110,7 @@ class MainFrame(wx.Frame):
         self.bearing_lifespan.Hide()
         self.bearing_temp_rise.Hide()
         self.angular_bearing_pressure.Hide()
-        self.angular_bearing_rigidity.Hide()
-        self.cylindrical_bearing_pressure.Hide()
+
 
         if label == '螺桿推力':
             self.screw_thrust_panel.Show()
@@ -116,12 +120,8 @@ class MainFrame(wx.Frame):
             self.bearing_lifespan.Show()
         elif label == '軸承溫升估算':
             self.bearing_temp_rise.Show()
-        elif label == '斜角滾珠軸承壓力預估':
+        elif label == '斜角滾珠軸承預壓力與剛性轉速預估':
             self.angular_bearing_pressure.Show()
-        elif label == '斜角滾珠軸承剛性轉速預估':
-            self.angular_bearing_rigidity.Show()
-        elif label == "滾子軸承剛性轉速與遇壓" :
-            self.cylindrical_bearing_pressure.Show()
 
         self.panel.Layout()
 

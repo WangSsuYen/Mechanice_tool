@@ -1048,64 +1048,8 @@ class angular_bearing_pressure(wx.ScrolledWindow):
                 self.dbbd_radial_rigidity.SetValue("")
                 self.dbbd_axial_rigidity.SetValue("")
 
-
-
         except ValueError as e:
             wx.MessageBox(f"輸入錯誤: {e}", "錯誤", wx.OK | wx.ICON_ERROR)
         except Exception as e:
             wx.MessageBox(f"計算錯誤: {e}", "錯誤", wx.OK | wx.ICON_ERROR)
 
-
-# 斜角滾珠軸承剛性轉速預估
-class angular_bearing_rigidity(wx.Panel):
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.InitUI()
-
-    def InitUI(self):
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        self.SetSizer(sizer)
-
-        self.AddLabeledTextCtrl(sizer, "流量：")
-        self.AddLabeledTextCtrl(sizer, "面積：")
-        self.AddLabeledTextCtrl(sizer, "壓力：")
-        self.AddLabeledTextCtrl(sizer, "溫度：")
-
-        calc_button = wx.Button(self, label="送出計算")
-        sizer.Add(calc_button, 0, wx.EXPAND | wx.ALL, 5)
-
-    def AddLabeledTextCtrl(self, sizer, label):
-        box = wx.BoxSizer(wx.HORIZONTAL)
-        lbl = wx.StaticText(self, label=label)
-        txt = wx.TextCtrl(self)
-        box.Add(lbl, 0, wx.ALL, 5)
-        box.Add(txt, 1, wx.ALL, 5)
-        sizer.Add(box, 0, wx.EXPAND | wx.ALL, 5)
-
-
-
-# 滾子軸承剛性轉速與遇壓
-class cylindrical_bearing_pressure(wx.Panel):
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.InitUI()
-
-    def InitUI(self):
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        self.SetSizer(sizer)
-
-        self.AddLabeledTextCtrl(sizer, "流量：")
-        self.AddLabeledTextCtrl(sizer, "面積：")
-        self.AddLabeledTextCtrl(sizer, "壓力：")
-        self.AddLabeledTextCtrl(sizer, "溫度：")
-
-        calc_button = wx.Button(self, label="送出計算")
-        sizer.Add(calc_button, 0, wx.EXPAND | wx.ALL, 5)
-
-    def AddLabeledTextCtrl(self, sizer, label):
-        box = wx.BoxSizer(wx.HORIZONTAL)
-        lbl = wx.StaticText(self, label=label)
-        txt = wx.TextCtrl(self)
-        box.Add(lbl, 0, wx.ALL, 5)
-        box.Add(txt, 1, wx.ALL, 5)
-        sizer.Add(box, 0, wx.EXPAND | wx.ALL, 5)
