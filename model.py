@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
+from config import DATABASE_URI
 
 # 定義基類
 Base = declarative_base()
@@ -50,10 +51,9 @@ class ServoMotor(Base):
     # 反向關係
     manufacturer = relationship('Manufacturer', back_populates='servo_motors')
 
-# 設置數據庫連接
-DATABASE_URI = 'sqlite:///mechanics_tools.db'
-engine = create_engine(DATABASE_URI)
 
+# 設置數據庫連接
+engine = create_engine(DATABASE_URI)
 # 創建所有表
 Base.metadata.create_all(engine)
 

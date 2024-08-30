@@ -3,10 +3,9 @@ from operation import *
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from model import *
-
+from config import DATABASE_URI
 
 # 設置 SQLAlchemy 連接
-DATABASE_URI = 'sqlite:///mechanics_tools.db'
 engine = create_engine(DATABASE_URI)
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
@@ -45,7 +44,7 @@ class SideMenu(wx.Panel):
         self.title.SetFont(font)
         self.title_sizer.Add(self.title, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALL, 5)
 
-        self.formulas = ['螺桿推力', 'V型皮帶', '軸承壽命估算','軸承溫升估算','斜角滾珠軸承預壓力與剛性轉速預估']
+        self.formulas = ['螺桿推力', 'V型皮帶', '軸承壽命估算','軸承溫升估算','斜角滾珠軸承預壓力與剛性轉速預估',"馬達規格搜尋"]
         for formula in self.formulas:
             btn = wx.Button(self, label=formula)
             btn.Bind(wx.EVT_BUTTON, self.OnFormulaSelected)
@@ -84,6 +83,7 @@ class MainFrame(wx.Frame):
         self.bearing_lifespan = bearing_lifespan(self.panel)
         self.bearing_temp_rise = bearing_temp_rise(self.panel)
         self.angular_bearing_pressure = angular_bearing_pressure(self.panel)
+        self.search_funtion = search_funtion(self.panel)
 
         # 類別匯入主頁
         self.main_sizer.Add(self.screw_thrust_panel, 1, wx.EXPAND | wx.ALL, 5)
@@ -91,6 +91,7 @@ class MainFrame(wx.Frame):
         self.main_sizer.Add(self.bearing_lifespan, 1, wx.EXPAND | wx.ALL, 5)
         self.main_sizer.Add(self.bearing_temp_rise, 1, wx.EXPAND | wx.ALL, 5)
         self.main_sizer.Add(self.angular_bearing_pressure, 1, wx.EXPAND | wx.ALL, 5)
+        self.main_sizer.Add(self.search_funtion, 1, wx.EXPAND | wx.ALL, 5)
 
         # 其他類別隱藏
         self.screw_thrust_panel.Hide()
@@ -98,6 +99,7 @@ class MainFrame(wx.Frame):
         self.bearing_lifespan.Hide()
         self.bearing_temp_rise.Hide()
         self.angular_bearing_pressure.Hide()
+        self.search_funtion.Hide()
 
         self.SetTitle('Yang Iron Mechanice Tools')
         self.Maximize(True)
@@ -110,6 +112,7 @@ class MainFrame(wx.Frame):
         self.bearing_lifespan.Hide()
         self.bearing_temp_rise.Hide()
         self.angular_bearing_pressure.Hide()
+        self.search_funtion.Hide()
 
 
         if label == '螺桿推力':
@@ -122,7 +125,8 @@ class MainFrame(wx.Frame):
             self.bearing_temp_rise.Show()
         elif label == '斜角滾珠軸承預壓力與剛性轉速預估':
             self.angular_bearing_pressure.Show()
-
+        elif label == "馬達規格搜尋":
+            self.search_funtion.Show()
         self.panel.Layout()
 
 

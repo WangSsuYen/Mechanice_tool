@@ -1,5 +1,7 @@
-import wx, math, wx.adv
+import wx, math, wx.adv, wx.grid
 from data import *
+from data_operation import *
+from model import *
 
 # 螺桿推力計算
 class ScrewThrustPanel(wx.ScrolledWindow):
@@ -1053,3 +1055,99 @@ class angular_bearing_pressure(wx.ScrolledWindow):
         except Exception as e:
             wx.MessageBox(f"計算錯誤: {e}", "錯誤", wx.OK | wx.ICON_ERROR)
 
+
+# 搜尋機制
+class search_funtion(wx.ScrolledWindow):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.InitUI()
+
+    def InitUI(self):
+        # 畫面長寬設定
+        fixed_size = wx.Size(1200,-1)
+        # 畫面管理器
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        self.SetSizer(sizer)
+        # 載入GIF
+        animation = wx.adv.Animation('images/you_right.gif')
+        gif_ctrl = wx.adv.AnimationCtrl(self, -1, animation)
+        # 設定GIF自動撥放
+        gif_ctrl.Play()
+        sizer.Add(gif_ctrl, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+
+        # 搜尋介面
+        search_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.search_box = wx.TextCtrl(self, style=wx.TE_PROCESS_ENTER, size=(300,50))
+        search_font = wx.Font(30, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL)
+        self.search_box.SetFont(search_font)
+        self.search_box.SetHint("搜尋")
+        self.search_box.Bind(wx.EVT_TEXT_ENTER, self.Judgmental)
+        search_sizer.Add(self.search_box, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        # 搜尋圖面
+        image = wx.Image("images/magnifier.png", wx.BITMAP_TYPE_PNG)
+        resized_image = image.Scale(48, 48, wx.IMAGE_QUALITY_HIGH)
+        magnifier_bitmap = wx.Bitmap(resized_image)
+        magnifier_button = wx.BitmapButton(self, bitmap=magnifier_bitmap)
+        magnifier_button.Bind(wx.EVT_BUTTON, self.Judgmental)
+        search_sizer.Add(magnifier_button, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 10)
+        sizer.Add(search_sizer, 0, wx.ALIGN_CENTER|wx.ALL, 10)
+
+        # 欄位介面
+        table_sizer = wx.BoxSizer(wx.VERTICAL)
+        grid = wx.grid.Grid(self)
+        grid.SetMinSize(fixed_size)
+        grid.CreateGrid(10,3)
+        table_sizer.Add(grid, 0, wx.EXPAND|wx.ALL, 10)
+        sizer.Add(table_sizer, 0, wx.ALIGN_CENTER|wx.ALL, 10)
+
+
+        # 設置滾動區域
+        self.SetScrollbars(50, 50, 50, 50)  # 設置捲動條，(水平步長, 垂直步長, 水平範圍, 垂直範圍)
+        self.SetScrollRate(20, 20)  # 設置滾動速率
+
+
+    def Judgmental(self, event):
+        text = self.search_box.GetValue()
+        if text == "Insert":
+            self.show_insert_dialog()
+
+    def show_insert_dialog(self):
+        dialog = self.InsertDialog(self, "新增資料", ServoMotor)
+        if dialog.ShowModal() == wx.ID_OK:
+            data = dialog.get_field_values()
+        dialog.Destroy()
+
+
+    # 新增機制小視窗
+    class InsertDialog(wx.Dialog):
+        def __init__(self, parent, title, model):
+            super().__init__(parent, title=title, size=(400, 300))
+            self.model = model
+            self.init_ui()
+
+        def init_ui(self):
+            new_sizer = wx.BoxSizer(wx.VERTICAL)
+            self.SetSizer(new_sizer)
+
+            # 根據模型動態生成輸入欄位
+            self.fields = {}
+            labels = self.get_table_label(self.model)
+            for label in labels:
+                field_sizer = wx.BoxSizer(wx.HORIZONTAL)
+                field_label = wx.StaticText(new_sizer, label=label)
+                field_input = wx.TextCtrl(new_sizer)
+                self.fields[label] = field_input
+                field_sizer.Add(field_label, 0, wx.ALL | wx.CENTER, 5)
+                field_sizer.Add(field_input, 1, wx.ALL | wx.EXPAND, 5)
+                new_sizer.Add(field_sizer, 0, wx.ALL | wx.EXPAND, 5)
+
+            # 添加確認和取消按鈕
+            btn_sizer = self.CreateButtonSizer(wx.OK | wx.CANCEL)
+            new_sizer.Add(btn_sizer, 0, wx.ALL | wx.CENTER, 10)
+
+
+        def get_table_label(self, model):
+            return [column.name for column in model.__table__.columns]
+
+        def get_field_values(self):
+            return {label: self.fields[label].GetValue() for label in self.fields}
