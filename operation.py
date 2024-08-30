@@ -2,6 +2,7 @@ import wx, math, wx.adv, wx.grid
 from data import *
 from data_operation import *
 from model import *
+from dialog_win import *
 
 # 螺桿推力計算
 class ScrewThrustPanel(wx.ScrolledWindow):
@@ -1108,46 +1109,18 @@ class search_funtion(wx.ScrolledWindow):
 
     def Judgmental(self, event):
         text = self.search_box.GetValue()
-        if text == "Insert":
-            self.show_insert_dialog()
+        if text == "Insert_servo":
+            self.show_insert_servo()
+        elif text == "Insert_spindle":
+            self.show_insert_spindle()
 
-    def show_insert_dialog(self):
-        dialog = self.InsertDialog(self, "新增資料", ServoMotor)
-        if dialog.ShowModal() == wx.ID_OK:
-            data = dialog.get_field_values()
+    def show_insert_servo(self):
+        dialog = InsertDialog(self, "新增資料", ServoMotor)
+        dialog.ShowModal()
         dialog.Destroy()
 
+    def show_insert_spindle(self):
+        dialog = InsertDialog(self, "新增資料", SpindleMotor)
+        dialog.ShowModal()
+        dialog.Destroy()
 
-    # 新增機制小視窗
-    class InsertDialog(wx.Dialog):
-        def __init__(self, parent, title, model):
-            super().__init__(parent, title=title, size=(400, 300))
-            self.model = model
-            self.init_ui()
-
-        def init_ui(self):
-            new_sizer = wx.BoxSizer(wx.VERTICAL)
-            self.SetSizer(new_sizer)
-
-            # 根據模型動態生成輸入欄位
-            self.fields = {}
-            labels = self.get_table_label(self.model)
-            for label in labels:
-                field_sizer = wx.BoxSizer(wx.HORIZONTAL)
-                field_label = wx.StaticText(new_sizer, label=label)
-                field_input = wx.TextCtrl(new_sizer)
-                self.fields[label] = field_input
-                field_sizer.Add(field_label, 0, wx.ALL | wx.CENTER, 5)
-                field_sizer.Add(field_input, 1, wx.ALL | wx.EXPAND, 5)
-                new_sizer.Add(field_sizer, 0, wx.ALL | wx.EXPAND, 5)
-
-            # 添加確認和取消按鈕
-            btn_sizer = self.CreateButtonSizer(wx.OK | wx.CANCEL)
-            new_sizer.Add(btn_sizer, 0, wx.ALL | wx.CENTER, 10)
-
-
-        def get_table_label(self, model):
-            return [column.name for column in model.__table__.columns]
-
-        def get_field_values(self):
-            return {label: self.fields[label].GetValue() for label in self.fields}

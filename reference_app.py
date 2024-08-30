@@ -103,7 +103,7 @@ class MainFrame(wx.Frame):
 
         self.SetTitle('Yang Iron Mechanice Tools')
         self.Maximize(True)
-        self.Centre()
+        self.Center()
 
 
     def SwitchPanel(self, label):
