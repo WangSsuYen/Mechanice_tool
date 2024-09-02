@@ -3,12 +3,13 @@ from model import *
 
 # 新增機制小視窗
 class InsertDialog(wx.Dialog):
-    def __init__(self, parent, title, model):
+    def __init__(self, parent, title, model, refresh_callback=None):
         super().__init__(parent, title=title)
         self.model = model
         self.session = session
         self.fields = {}
         self.init_ui()
+        self.refresh_callback = refresh_callback
 
     def init_ui(self):
         dialog_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -51,8 +52,9 @@ class InsertDialog(wx.Dialog):
         box.Add(unit_lbl, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
         sizer.Add(box, 0, wx.EXPAND | wx.ALL, 5)
 
-    # 儲存
     def on_save(self, event):
+        # 取得使用者輸入的資料
+        data = self.get_data()
         # 取得使用者輸入的資料
         data = {}
         for field_name, text_ctrl in self.fields.items():
@@ -62,12 +64,15 @@ class InsertDialog(wx.Dialog):
         try:
             self.insert_data(data)
             wx.MessageBox('資料已成功儲存!', '訊息', wx.OK | wx.ICON_INFORMATION)
-            self.EndModal(wx.ID_OK) # 結束並關閉
+            if self.refresh_callback:
+                self.refresh_callback()  # 通知刷新
+            self.EndModal(wx.ID_OK)  # 結束並關閉
         except Exception as e:
             wx.MessageBox(f'資料儲存失敗: {e}', '錯誤', wx.OK | wx.ICON_ERROR)
 
-    # 儲存後繼續下一筆輸入
     def save_countinue(self, event):
+        # 取得使用者輸入的資料
+        data = self.get_data()
         # 取得使用者輸入的資料
         data = {}
         for field_name, text_ctrl in self.fields.items():
@@ -76,9 +81,27 @@ class InsertDialog(wx.Dialog):
         try:
             self.insert_data(data)
             wx.MessageBox('資料已成功儲存!', '訊息', wx.OK | wx.ICON_INFORMATION)
+            if self.refresh_callback:
+                self.refresh_callback()  # 通知刷新
             self.clear_fields()  # 清空輸入框，準備下一筆資料輸入
         except Exception as e:
             wx.MessageBox(f'資料儲存失敗: {e}', '錯誤', wx.OK | wx.ICON_ERROR)
+
+
+    def get_data(self):
+        data = {}
+        for field_name, text_ctrl in self.fields.items():
+            value = text_ctrl.GetValue()
+            if field_name == 'manufacturer_name':  # 假設你有一個叫做 'manufacturer_name' 的欄位
+                # 查找廠商 ID
+                manufacturer = self.session.query(Manufacturer).filter_by(manufacturer_name=value).first()
+                if manufacturer:
+                    data['manufacturer_id'] = manufacturer.id
+                else:
+                    data['manufacturer_id'] = None
+            else:
+                data[field_name] = value
+        return data
 
     # 建立資料
     def insert_data(self, data):
