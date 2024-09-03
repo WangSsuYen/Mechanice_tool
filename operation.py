@@ -1058,6 +1058,26 @@ class angular_bearing_pressure(wx.ScrolledWindow):
             wx.MessageBox(f"計算錯誤: {e}", "錯誤", wx.OK | wx.ICON_ERROR)
 
 
+
+class buttonRenderer(wx.grid.PyGridCellRenderer):
+    def __init__(self, grid, callback):
+        wx.grid.GridCellRenderer.__init__(self)
+        self.grid = grid
+        self.callback = callback
+        self.buttonState = wx.CONTROL_FLAT
+
+    def Draw(self, grid, attr, dc, rect, row, col, isSelected):
+        # 使用 rect 來定義按鈕的位置和大小
+        rect.Inflate(-2, -2)  # 添加內邊距
+        wx.RendererNative.Get().DrawPushButton(grid, dc, rect, self.buttonState)
+
+    def MouseClick(self, event):
+        row, col = self.grid.CalcUnscrolledPosition(event.GetPosition())
+        if self.grid.GetCellValue(row, col) == '刪除':
+            self.callback('刪除', row, col)
+        elif self.grid.GetCellValue(row, col) == '修改':
+            self.callback('修改', row, col)
+
 # 搜尋視窗
 class search_funtion(wx.ScrolledWindow):
     def __init__(self, parent):
@@ -1108,41 +1128,55 @@ class search_funtion(wx.ScrolledWindow):
 
 
     def add_sheet(self, notebook, session, model_class, sheet_name):
-        # 創建 notebook
         panel = wx.Panel(notebook)
         notebook.AddPage(panel, sheet_name)
 
-        # 創建表格
         table_sizer = wx.BoxSizer(wx.VERTICAL)
         grid = wx.grid.Grid(panel)
 
-        # 抓取資料庫數據
         records = session.query(model_class).all()
         chi_headers, columns = self.get_model_name(model_class)
 
-        # 準備顯示的數據
         data = []
         for record in records:
             row = []
             for column in columns:
                 value = getattr(record, column)
                 if column == 'manufacturer_id':
-                    # 查詢廠商名稱
                     manufacturer = session.query(Manufacturer).filter_by(id=value).first()
                     value = manufacturer.manufacturer_name if manufacturer else '未知'
                 row.append(value)
             data.append(row)
 
-        # 設定表格
-        grid.CreateGrid(len(data), len(chi_headers))
+        grid.CreateGrid(len(data), len(chi_headers)+2)
         for col, column_name in enumerate(chi_headers):
             grid.SetColLabelValue(col, column_name)
+        grid.SetColLabelValue(len(chi_headers), '刪除')
+        grid.SetColLabelValue(len(chi_headers) + 1, '修改')
+
         for row_index, row_data in enumerate(data):
             for col_index, cell_data in enumerate(row_data):
                 grid.SetCellValue(row_index, col_index, str(cell_data))
+
+            # Add button renderer to the last two columns (刪除 and 修改)
+            for col_index in [len(chi_headers), len(chi_headers) + 1]:
+                attr = wx.grid.GridCellAttr()
+                renderer = buttonRenderer(grid, self.on_button_click)
+                attr.SetRenderer(renderer)
+                grid.SetAttr(row_index, col_index, attr)
+                grid.SetReadOnly(row_index, col_index, True)
+
         grid.Fit()
         table_sizer.Add(grid, 0, wx.EXPAND | wx.ALL, 10)
         panel.SetSizer(table_sizer)
+
+    # 被點擊時操作
+    def on_button_click(self, action, row, col):
+        if action == '刪除':
+            self.show_delete_dialog(row)
+        elif action == '修改':
+            self.show_edit_dialog(row)
+
 
     def get_model_name(self,model):
         # 抓取中文名稱
@@ -1168,26 +1202,28 @@ class search_funtion(wx.ScrolledWindow):
         elif text == "Insert_spindle":
             self.show_insert_spindle()
 
+
     def show_insert_servo(self):
         dialog = InsertDialog(self, "新增資料", ServoMotor, refresh_callback=self.refresh_servo)
         dialog.ShowModal()
         dialog.Destroy()
+
 
     def show_insert_spindle(self):
         dialog = InsertDialog(self, "新增資料", SpindleMotor, refresh_callback=self.refresh_spindle)
         dialog.ShowModal()
         dialog.Destroy()
 
-    def refresh_servo(self):
     # 刷新伺服馬達頁面
+    def refresh_servo(self):
         for page_index in range(self.notebook.GetPageCount()):
             if self.notebook.GetPageText(page_index) == "伺服馬達":
                 self.notebook.RemovePage(page_index)
                 self.add_sheet(self.notebook, session, ServoMotor, "伺服馬達")
                 break
 
+    # 刷新主軸馬達頁面
     def refresh_spindle(self):
-        # 刷新主軸馬達頁面
         for page_index in range(self.notebook.GetPageCount()):
             if self.notebook.GetPageText(page_index) == "主軸馬達":
                 self.notebook.RemovePage(page_index)
