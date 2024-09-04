@@ -1,6 +1,5 @@
 import wx, math, wx.adv, wx.grid
-import wx.grid
-from data import *
+from mathematical import *
 from data_operation import *
 from model import *
 from dialog_win import *
@@ -1059,25 +1058,6 @@ class angular_bearing_pressure(wx.ScrolledWindow):
 
 
 
-class buttonRenderer(wx.grid.PyGridCellRenderer):
-    def __init__(self, grid, callback):
-        wx.grid.GridCellRenderer.__init__(self)
-        self.grid = grid
-        self.callback = callback
-        self.buttonState = wx.CONTROL_FLAT
-
-    def Draw(self, grid, attr, dc, rect, row, col, isSelected):
-        # 使用 rect 來定義按鈕的位置和大小
-        rect.Inflate(-2, -2)  # 添加內邊距
-        wx.RendererNative.Get().DrawPushButton(grid, dc, rect, self.buttonState)
-
-    def MouseClick(self, event):
-        row, col = self.grid.CalcUnscrolledPosition(event.GetPosition())
-        if self.grid.GetCellValue(row, col) == '刪除':
-            self.callback('刪除', row, col)
-        elif self.grid.GetCellValue(row, col) == '修改':
-            self.callback('修改', row, col)
-
 # 搜尋視窗
 class search_funtion(wx.ScrolledWindow):
     def __init__(self, parent):
@@ -1148,34 +1128,58 @@ class search_funtion(wx.ScrolledWindow):
                 row.append(value)
             data.append(row)
 
-        grid.CreateGrid(len(data), len(chi_headers)+2)
+        grid.CreateGrid(len(data), len(chi_headers) + 2)
+
         for col, column_name in enumerate(chi_headers):
             grid.SetColLabelValue(col, column_name)
         grid.SetColLabelValue(len(chi_headers), '刪除')
-        grid.SetColLabelValue(len(chi_headers) + 1, '修改')
+        grid.SetColLabelValue(len(chi_headers) + 1, '更新')
 
         for row_index, row_data in enumerate(data):
             for col_index, cell_data in enumerate(row_data):
                 grid.SetCellValue(row_index, col_index, str(cell_data))
 
-            # Add button renderer to the last two columns (刪除 and 修改)
-            for col_index in [len(chi_headers), len(chi_headers) + 1]:
-                attr = wx.grid.GridCellAttr()
-                renderer = buttonRenderer(grid, self.on_button_click)
-                attr.SetRenderer(renderer)
-                grid.SetAttr(row_index, col_index, attr)
-                grid.SetReadOnly(row_index, col_index, True)
+            # Create delete and update buttons
+            delete_button = wx.Button(panel, label='刪除', size=(80, 30))
+            delete_button.Bind(wx.EVT_BUTTON, lambda evt, r=row_index: self.on_delete_button_click(r, evt))
+            update_button = wx.Button(panel, label='更新', size=(80, 30))
+            update_button.Bind(wx.EVT_BUTTON, lambda evt, r=row_index: self.on_update_button_click(r, evt))
+
+            # Add buttons to sizer
+            button_sizer = wx.BoxSizer(wx.HORIZONTAL)
+            button_sizer.Add(delete_button, 0, wx.ALL, 5)
+            button_sizer.Add(update_button, 0, wx.ALL, 5)
+            grid.SetCellRenderer(row_index, len(chi_headers), ButtonCellRenderer(button_sizer))
+            grid.SetCellRenderer(row_index, len(chi_headers) + 1, ButtonCellRenderer(button_sizer))
 
         grid.Fit()
         table_sizer.Add(grid, 0, wx.EXPAND | wx.ALL, 10)
         panel.SetSizer(table_sizer)
 
-    # 被點擊時操作
-    def on_button_click(self, action, row, col):
-        if action == '刪除':
-            self.show_delete_dialog(row)
-        elif action == '修改':
-            self.show_edit_dialog(row)
+
+
+    def on_delete_button_click(self, row, event):
+        dlg = wx.MessageDialog(self, "確定要刪除這一行嗎？", "確認刪除", wx.YES_NO | wx.ICON_QUESTION)
+        if dlg.ShowModal() == wx.ID_YES:
+            # Handle the delete operation here
+            wx.MessageBox(f'刪除行 {row}', '刪除', wx.OK | wx.ICON_INFORMATION)
+        dlg.Destroy()
+
+    def on_update_button_click(self, row, event):
+        data = self.retrieve_row_data(row)
+        dialog = UpdateDialog(self, data, self.on_update_confirm)
+        dialog.ShowModal()
+        dialog.Destroy()
+
+    def retrieve_row_data(self, row):
+        return {
+            'id': row,
+            'name': 'Sample Name',
+            'description': 'Sample Description'
+        }
+
+    def on_update_confirm(self, updated_data):
+        wx.MessageBox(f'更新資料: {updated_data}', '更新', wx.OK | wx.ICON_INFORMATION)
 
 
     def get_model_name(self,model):
@@ -1229,3 +1233,19 @@ class search_funtion(wx.ScrolledWindow):
                 self.notebook.RemovePage(page_index)
                 self.add_sheet(self.notebook, session, SpindleMotor, "主軸馬達")
                 break
+
+
+class ButtonCellRenderer(wx.grid.GridCellRenderer):
+    def __init__(self, button_sizer):
+        super().__init__()
+        self.button_sizer = button_sizer
+
+    def Draw(self, grid, attr, dc, rect, row, col, is_selected):
+        # No need to draw anything here, buttons are added directly to the panel
+        pass
+
+    def GetBestSize(self, grid, attr, dc, row, col):
+        return wx.Size(80, 30)  # Return the size of the buttons
+
+    def Clone(self):
+        return ButtonCellRenderer(self.button_sizer)

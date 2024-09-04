@@ -139,4 +139,5 @@ if __name__ == '__main__':
         app.MainLoop()
     except Exception as e:
         error_message = traceback.format_exc()
+        print(error_message)
         wx.MessageBox(f"程序出現異常:\n\n{error_message}", "錯誤", wx.OK | wx.ICON_ERROR)

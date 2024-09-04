@@ -113,45 +113,37 @@ class InsertDialog(wx.Dialog):
             text_ctrl.SetValue("")
 
 
-class DeleteDialog(wx.Dialog):
-    def __init__(self, parent, title, refresh_servo, refresh_spindle):
-        super().__init__(parent, title=title)
-        self.refresh_servo = refresh_servo
-        self.refresh_spindle = refresh_spindle
-        self.init_ui()
+class UpdateDialog(wx.Dialog):
+    def __init__(self, parent, data, update_callback):
+        super().__init__(parent, title="更新資料")
+        self.update_callback = update_callback
+        self.fields = {}
+        sizer = wx.BoxSizer(wx.VERTICAL)
 
-    def init_ui(self):
-        # 略過對話框UI初始化代碼
-        pass
+        for key, value in data.items():
+            label = wx.StaticText(self, label=f"{key}:")
+            text_ctrl = wx.TextCtrl(self, value=str(value))
+            self.fields[key] = text_ctrl
+            sizer.Add(label, 0, wx.ALL, 5)
+            sizer.Add(text_ctrl, 0, wx.EXPAND | wx.ALL, 5)
 
-    def on_delete(self, row):
-        # 確認刪除
-        confirm = wx.MessageBox('確定刪除這筆資料?', '確認', wx.YES_NO | wx.ICON_QUESTION)
-        if confirm == wx.YES:
-            model_class = SpindleMotor if self.GetParent().notebook.GetCurrentPage().GetLabel() == "主軸馬達" else ServoMotor
-            record_id = self.get_record_id(row)
-            record = session.query(model_class).get(record_id)
-            if record:
-                session.delete(record)
-                session.commit()
-                if self.GetParent().notebook.GetCurrentPage().GetLabel() == "伺服馬達":
-                    self.refresh_servo()
-                else:
-                    self.refresh_spindle()
+        button_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        save_button = wx.Button(self, wx.ID_SAVE, "保存")
+        save_button.Bind(wx.EVT_BUTTON, self.on_save)
+        cancel_button = wx.Button(self, wx.ID_CANCEL, "取消")
+        cancel_button.Bind(wx.EVT_BUTTON, self.on_cancel)
+        button_sizer.Add(save_button, 0, wx.ALL, 5)
+        button_sizer.Add(cancel_button, 0, wx.ALL, 5)
 
+        sizer.Add(button_sizer, 0, wx.ALIGN_CENTER)
+        self.Fit()
+        self.Center()
+        self.SetSizer(sizer)
 
-class EditDialog(wx.Dialog):
-    def __init__(self, parent, title, record, refresh_servo, refresh_spindle):
-        super().__init__(parent, title=title)
-        self.record = record
-        self.refresh_servo = refresh_servo
-        self.refresh_spindle = refresh_spindle
-        self.init_ui()
+    def on_save(self, event):
+        updated_data = {key: ctrl.GetValue() for key, ctrl in self.fields.items()}
+        self.update_callback(updated_data)
+        self.EndModal(wx.ID_OK)
 
-    def init_ui(self):
-        # 略過對話框UI初始化代碼
-        pass
-
-    def on_edit(self, row):
-        # 編輯對應的資料
-        pass
+    def on_cancel(self, event):
+        self.EndModal(wx.ID_CANCEL)
