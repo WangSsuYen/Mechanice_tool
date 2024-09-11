@@ -48,7 +48,6 @@ class InsertDialog(wx.Dialog):
         lbl.SetFont(font)
         txt = wx.TextCtrl(self, size=(100, 20))
         self.fields[field_name] = txt # 將輸入值與field_name串接關係。儲存資料為{fields["name"]:名稱}
-        print(self.fields)
         unit_lbl = wx.StaticText(self, label=unit)
         # 加入畫面
         box.Add(lbl, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
@@ -111,39 +110,3 @@ class InsertDialog(wx.Dialog):
     def clear_fields(self):
         for text_ctrl in self.fields.values():
             text_ctrl.SetValue("")
-
-
-class UpdateDialog(wx.Dialog):
-    def __init__(self, parent, data, update_callback):
-        super().__init__(parent, title="更新資料")
-        self.update_callback = update_callback
-        self.fields = {}
-        sizer = wx.BoxSizer(wx.VERTICAL)
-
-        for key, value in data.items():
-            label = wx.StaticText(self, label=f"{key}:")
-            text_ctrl = wx.TextCtrl(self, value=str(value))
-            self.fields[key] = text_ctrl
-            sizer.Add(label, 0, wx.ALL, 5)
-            sizer.Add(text_ctrl, 0, wx.EXPAND | wx.ALL, 5)
-
-        button_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        save_button = wx.Button(self, wx.ID_SAVE, "保存")
-        save_button.Bind(wx.EVT_BUTTON, self.on_save)
-        cancel_button = wx.Button(self, wx.ID_CANCEL, "取消")
-        cancel_button.Bind(wx.EVT_BUTTON, self.on_cancel)
-        button_sizer.Add(save_button, 0, wx.ALL, 5)
-        button_sizer.Add(cancel_button, 0, wx.ALL, 5)
-
-        sizer.Add(button_sizer, 0, wx.ALIGN_CENTER)
-        self.Fit()
-        self.Center()
-        self.SetSizer(sizer)
-
-    def on_save(self, event):
-        updated_data = {key: ctrl.GetValue() for key, ctrl in self.fields.items()}
-        self.update_callback(updated_data)
-        self.EndModal(wx.ID_OK)
-
-    def on_cancel(self, event):
-        self.EndModal(wx.ID_CANCEL)

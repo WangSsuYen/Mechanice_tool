@@ -864,8 +864,8 @@ class angular_bearing_pressure(wx.ScrolledWindow):
         db_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
         db_bg.GetStaticBox().SetMinSize(fixed_size)
         db_sizer = wx.GridSizer(cols=2, vgap=20, hgap=300)
-        self.db_radial_rigidity = self.AddLabeledTextCtrl(db_sizer, "徑向剛性 : ", "N/µm", 120, 20, readonly=True)
-        self.db_allowable_rpm = self.AddLabeledTextCtrl(db_sizer, "容許轉速 : ", "RPM", 120, 20, readonly=True)
+        self.db_radial_rigidity = self.AddLabeledTextCtrl(db_sizer, "徑向剛性 : ", "N/µm", 100, 20, readonly=True)
+        self.db_allowable_rpm = self.AddLabeledTextCtrl(db_sizer, "容許轉速 : ", "RPM", 100, 20, readonly=True)
         db_bg.Add(db_sizer, 0, wx.EXPAND|wx.ALL, 10)
         sizer.Add(db_bg, 0, wx.ALIGN_CENTER|wx.ALL, 10)
 
@@ -1128,58 +1128,20 @@ class search_funtion(wx.ScrolledWindow):
                 row.append(value)
             data.append(row)
 
-        grid.CreateGrid(len(data), len(chi_headers) + 2)
+        grid.CreateGrid(len(data), len(chi_headers))
 
+        # 欄位名稱
         for col, column_name in enumerate(chi_headers):
             grid.SetColLabelValue(col, column_name)
-        grid.SetColLabelValue(len(chi_headers), '刪除')
-        grid.SetColLabelValue(len(chi_headers) + 1, '更新')
 
+        # 資料鋪陳
         for row_index, row_data in enumerate(data):
             for col_index, cell_data in enumerate(row_data):
                 grid.SetCellValue(row_index, col_index, str(cell_data))
 
-            # Create delete and update buttons
-            delete_button = wx.Button(panel, label='刪除', size=(80, 30))
-            delete_button.Bind(wx.EVT_BUTTON, lambda evt, r=row_index: self.on_delete_button_click(r, evt))
-            update_button = wx.Button(panel, label='更新', size=(80, 30))
-            update_button.Bind(wx.EVT_BUTTON, lambda evt, r=row_index: self.on_update_button_click(r, evt))
-
-            # Add buttons to sizer
-            button_sizer = wx.BoxSizer(wx.HORIZONTAL)
-            button_sizer.Add(delete_button, 0, wx.ALL, 5)
-            button_sizer.Add(update_button, 0, wx.ALL, 5)
-            grid.SetCellRenderer(row_index, len(chi_headers), ButtonCellRenderer(button_sizer))
-            grid.SetCellRenderer(row_index, len(chi_headers) + 1, ButtonCellRenderer(button_sizer))
-
         grid.Fit()
         table_sizer.Add(grid, 0, wx.EXPAND | wx.ALL, 10)
         panel.SetSizer(table_sizer)
-
-
-
-    def on_delete_button_click(self, row, event):
-        dlg = wx.MessageDialog(self, "確定要刪除這一行嗎？", "確認刪除", wx.YES_NO | wx.ICON_QUESTION)
-        if dlg.ShowModal() == wx.ID_YES:
-            # Handle the delete operation here
-            wx.MessageBox(f'刪除行 {row}', '刪除', wx.OK | wx.ICON_INFORMATION)
-        dlg.Destroy()
-
-    def on_update_button_click(self, row, event):
-        data = self.retrieve_row_data(row)
-        dialog = UpdateDialog(self, data, self.on_update_confirm)
-        dialog.ShowModal()
-        dialog.Destroy()
-
-    def retrieve_row_data(self, row):
-        return {
-            'id': row,
-            'name': 'Sample Name',
-            'description': 'Sample Description'
-        }
-
-    def on_update_confirm(self, updated_data):
-        wx.MessageBox(f'更新資料: {updated_data}', '更新', wx.OK | wx.ICON_INFORMATION)
 
 
     def get_model_name(self,model):
@@ -1233,19 +1195,3 @@ class search_funtion(wx.ScrolledWindow):
                 self.notebook.RemovePage(page_index)
                 self.add_sheet(self.notebook, session, SpindleMotor, "主軸馬達")
                 break
-
-
-class ButtonCellRenderer(wx.grid.GridCellRenderer):
-    def __init__(self, button_sizer):
-        super().__init__()
-        self.button_sizer = button_sizer
-
-    def Draw(self, grid, attr, dc, rect, row, col, is_selected):
-        # No need to draw anything here, buttons are added directly to the panel
-        pass
-
-    def GetBestSize(self, grid, attr, dc, row, col):
-        return wx.Size(80, 30)  # Return the size of the buttons
-
-    def Clone(self):
-        return ButtonCellRenderer(self.button_sizer)
