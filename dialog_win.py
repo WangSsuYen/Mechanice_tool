@@ -1,7 +1,11 @@
 import wx
 from model import *
+from collections import OrderedDict
 
 class ManufacturerNotFoundError(Exception):
+    pass
+
+class DataComparisonError(Exception):
     pass
 
 # 新增機制小視窗
@@ -91,7 +95,6 @@ class InsertDialog(wx.Dialog):
             if field_name == 'manufacturer_id':  # 假設你有一個叫做 'manufacturer_name' 的欄位
                 # 查找廠商 ID
                 manufacturer = self.session.query(Manufacturer).filter_by(manufacturer_name=value).first()
-                print(manufacturer)
                 if manufacturer:
                     data['manufacturer_id'] = manufacturer.id
                 else:
@@ -183,6 +186,7 @@ class ModifyDialog(wx.Dialog):
         self.model = model
         self.session = session
         self.refresh_callback = refresh_callback
+        self.product_name = product_name
         self.fields = {}
         self.init_ui()
 
@@ -196,6 +200,22 @@ class ModifyDialog(wx.Dialog):
             unit = col.info.get('unit')
             if chinese_name or unit :
                 self.AddLabeledTextCtrl(dialog_sizer, f"{chinese_name} : ", f"{unit}", 150, 20, col.name)
+        # 抓取資料
+        motified_data = session.query(self.model).filter_by(name=self.product_name).first()
+        # 資料排列
+        ordered_data = OrderedDict()
+        ordered_data['name'] = motified_data.name
+        ordered_data['rate_output'] = motified_data.rate_output
+        ordered_data['torgue'] = motified_data.torgue
+        ordered_data['speed'] = motified_data.speed
+        ordered_data['max_torgue'] = motified_data.max_torgue
+        ordered_data['max_speed'] = motified_data.max_speed
+        ordered_data['weight'] = motified_data.weight
+        manufacturer = session.query(Manufacturer).filter_by(id=motified_data.manufacturer_id).first() # 抓取製造商名稱
+        ordered_data['manufacturer_id'] = manufacturer.manufacturer_name
+
+        # 鋪陳資料到 TextCtrl
+        self.set_data_to_fields(ordered_data)
 
         # 自定義按鈕
         btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -224,12 +244,19 @@ class ModifyDialog(wx.Dialog):
         box.Add(unit_lbl, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
         sizer.Add(box, 0, wx.EXPAND | wx.ALL, 5)
 
+    # 將資料鋪陳至textctrl
+    def set_data_to_fields(self, ordered_data):
+         for field_name, value in ordered_data.items():
+            if field_name in self.fields:
+                self.fields[field_name].SetValue(str(value))
+
+
     def on_modify(self, event):
-        # 將數據修改
         try:
             data = self.get_data()  # 取得使用者輸入的資料
-            record_id = data.pop('id')  # 取出 ID 來查找記錄
-            record = self.session.query(self.model).filter_by(id=record_id).first()
+            record_id = data.pop('name')
+            record = self.session.query(self.model).filter_by(name=record_id).first()
+            print(record)
             if record:
                 for key, value in data.items():
                     setattr(record, key, value)
@@ -248,4 +275,13 @@ class ModifyDialog(wx.Dialog):
         for field_name, text_ctrl in self.fields.items():
             value = text_ctrl.GetValue()
             data[field_name] = value
+        # 廠商比對
+        if field_name == 'manufacturer_id':
+            # 查找廠商 ID
+            manufacturer = self.session.query(Manufacturer).filter_by(manufacturer_name=value).first()
+            if manufacturer:
+                data['manufacturer_id'] = manufacturer.id
+            else:
+                raise ManufacturerNotFoundError(f"找不到 '{value}' 廠商")
+        print(data)
         return data

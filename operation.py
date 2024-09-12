@@ -1,6 +1,5 @@
 import wx, math, wx.adv, wx.grid
 from mathematical import *
-from data_operation import *
 from model import *
 from dialog_win import *
 
@@ -1069,7 +1068,7 @@ class ButtonRenderer(wx.grid.GridCellRenderer):
     def Draw(self, grid, attr, dc, rect, row, col, is_selected):
         # 設置繪圖顏色
         dc.SetTextForeground(wx.BLACK)
-        dc.SetBrush(wx.LIGHT_GREY_BRUSH)
+        # dc.SetBrush(wx.LIGHT_GREY_BRUSH)
         dc.SetPen(wx.Pen(wx.BLACK, 1))
         dc.DrawRectangle(rect)
 
@@ -1117,8 +1116,6 @@ class ButtonEditor(wx.grid.GridCellEditor):
 
     def IsAcceptedKey(self, event):
         return False
-
-
 
 
 # 搜尋視窗
@@ -1201,9 +1198,7 @@ class search_funtion(wx.ScrolledWindow):
 
         # 資料鋪陳
         for row_index, row_data in enumerate(data):
-            print(row_index,row_data)
             for col_index, cell_data in enumerate(row_data):
-                print(col_index,cell_data)
                 grid.SetCellValue(row_index, col_index, str(cell_data))
 
             # 添加刪除和修改按鈕
@@ -1232,7 +1227,6 @@ class search_funtion(wx.ScrolledWindow):
         # 在這裡添加實際的刪除邏輯
         if model_class == ServoMotor:
             dialog = DeleteDialog(self, "刪除資料", product_name, model_class, refresh_callback=self.refresh_servo)
-            print("是的，是伺服馬達")
         else:
             dialog = DeleteDialog(self, "刪除資料", product_name, model_class, refresh_callback=self.refresh_spindle)
         dialog.ShowModal()
