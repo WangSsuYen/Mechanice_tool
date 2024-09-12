@@ -110,3 +110,142 @@ class InsertDialog(wx.Dialog):
     def clear_fields(self):
         for text_ctrl in self.fields.values():
             text_ctrl.SetValue("")
+
+
+# 刪除機制小視窗
+class DeleteDialog(wx.Dialog):
+    def __init__(self, parent, title, product_name, model, refresh_callback=None):
+        super().__init__(parent, title=title)
+        self.product_name = product_name
+        self.model = model
+        self.session = session
+        self.refresh_callback = refresh_callback
+        self.field = None
+        self.init_ui()
+        print(self.product_name, self.model)
+
+    def init_ui(self):
+        dialog_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.SetSizer(dialog_sizer)
+
+        # 圖片
+        delete_image = wx.Image('images/you_sure.jpg', wx.BITMAP_TYPE_JPEG)
+        delete_image = delete_image.Scale(600, 393, wx.IMAGE_QUALITY_HIGH)
+        delete_bitmap = wx.StaticBitmap(self, -1, wx.Bitmap(delete_image))
+        dialog_sizer.Add(delete_bitmap, 0, wx.ALL | wx.CENTER, 10)
+
+        # 提示用戶確定删除
+        message = f"確定要刪除  「{self.product_name}」  嗎？"
+        msg_text = wx.StaticText(self, label=message, style=wx.ALIGN_CENTER)
+        text_font = wx.Font(15, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        msg_text.SetFont(text_font)
+        msg_text.SetForegroundColour(wx.Colour(255,0,0))
+        dialog_sizer.Add(msg_text, 0, wx.CENTER | wx.ALL, 30)
+
+        # 自定義按鈕
+        btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        delete_button = wx.Button(self, wx.ID_OK, label="刪除")
+        delete_button.Bind(wx.EVT_BUTTON, self.on_delete)
+        cancel_button = wx.Button(self, wx.ID_CANCEL, label="取消")
+        # 添加按鈕到佈局中
+        btn_sizer.Add(delete_button, 0, wx.ALL, 5)
+        btn_sizer.Add(cancel_button, 0, wx.ALL, 5)
+        dialog_sizer.Add(btn_sizer, 0, wx.ALL | wx.CENTER, 10)
+
+        # 自動調整視窗大小及位置至中
+        self.Fit()
+        self.Center()
+
+
+    def on_delete(self, event):
+        # 將數據刪除
+        try:
+            record = self.session.query(self.model).filter_by(name=self.product_name).first()
+            print(record)
+            if record:
+                self.session.delete(record)
+                self.session.commit()
+                wx.MessageBox('資料已成功刪除!', '訊息', wx.OK | wx.ICON_INFORMATION)
+                if self.refresh_callback:
+                    self.refresh_callback()  # 通知刷新
+                self.EndModal(wx.ID_OK)  # 結束並關閉
+            else:
+                wx.MessageBox('找不到該記錄!', '錯誤', wx.OK | wx.ICON_ERROR)
+        except Exception as e:
+            wx.MessageBox(f'刪除失敗: {e}', '錯誤', wx.OK | wx.ICON_ERROR)
+
+
+
+# 修改機制小視窗
+class ModifyDialog(wx.Dialog):
+    def __init__(self, parent, title, product_name, model, refresh_callback=None):
+        super().__init__(parent, title=title)
+        self.model = model
+        self.session = session
+        self.refresh_callback = refresh_callback
+        self.fields = {}
+        self.init_ui()
+
+    def init_ui(self):
+        dialog_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.SetSizer(dialog_sizer)
+
+        # 根據模型動態生成輸入欄位
+        for col in self.model.__table__.columns:
+            chinese_name = col.info.get('chinese_name')
+            unit = col.info.get('unit')
+            if chinese_name or unit :
+                self.AddLabeledTextCtrl(dialog_sizer, f"{chinese_name} : ", f"{unit}", 150, 20, col.name)
+
+        # 自定義按鈕
+        btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        modify_button = wx.Button(self, wx.ID_OK, label="修改")
+        modify_button.Bind(wx.EVT_BUTTON, self.on_modify)
+        cancel_button = wx.Button(self, wx.ID_CANCEL, label="取消")
+        # 添加按鈕到佈局中
+        btn_sizer.Add(modify_button, 0, wx.ALL, 5)
+        btn_sizer.Add(cancel_button, 0, wx.ALL, 5)
+        dialog_sizer.Add(btn_sizer, 0, wx.ALL | wx.CENTER, 10)
+        # 自動調整視窗大小及位置至中
+        self.Fit()
+        self.Center()
+
+    def AddLabeledTextCtrl(self, sizer, label, unit, width, high, field_name):
+        box = wx.BoxSizer(wx.HORIZONTAL)
+        lbl = wx.StaticText(self, label=label, size=(width, high))
+        font = wx.Font(12, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+        lbl.SetFont(font)
+        txt = wx.TextCtrl(self, size=(100, 20))
+        self.fields[field_name] = txt  # 儲存所有欄位
+        unit_lbl = wx.StaticText(self, label=unit)
+        # 加入畫面
+        box.Add(lbl, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
+        box.Add(txt, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
+        box.Add(unit_lbl, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
+        sizer.Add(box, 0, wx.EXPAND | wx.ALL, 5)
+
+    def on_modify(self, event):
+        # 將數據修改
+        try:
+            data = self.get_data()  # 取得使用者輸入的資料
+            record_id = data.pop('id')  # 取出 ID 來查找記錄
+            record = self.session.query(self.model).filter_by(id=record_id).first()
+            if record:
+                for key, value in data.items():
+                    setattr(record, key, value)
+                self.session.commit()
+                wx.MessageBox('資料已成功修改!', '訊息', wx.OK | wx.ICON_INFORMATION)
+                if self.refresh_callback:
+                    self.refresh_callback()  # 通知刷新
+                self.EndModal(wx.ID_OK)  # 結束並關閉
+            else:
+                wx.MessageBox('找不到該記錄!', '錯誤', wx.OK | wx.ICON_ERROR)
+        except Exception as e:
+            wx.MessageBox(f'修改失敗: {e}', '錯誤', wx.OK | wx.ICON_ERROR)
+
+    def get_data(self):
+        data = {}
+        for field_name, text_ctrl in self.fields.items():
+            value = text_ctrl.GetValue()
+            data[field_name] = value
+        return data

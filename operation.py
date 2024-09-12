@@ -1058,6 +1058,69 @@ class angular_bearing_pressure(wx.ScrolledWindow):
 
 
 
+
+class ButtonRenderer(wx.grid.GridCellRenderer):
+    def __init__(self, button_type, grid, callback):
+        super().__init__()
+        self.button_type = button_type
+        self.grid = grid
+        self.callback = callback
+
+    def Draw(self, grid, attr, dc, rect, row, col, is_selected):
+        # 設置繪圖顏色
+        dc.SetTextForeground(wx.BLACK)
+        dc.SetBrush(wx.LIGHT_GREY_BRUSH)
+        dc.SetPen(wx.Pen(wx.BLACK, 1))
+        dc.DrawRectangle(rect)
+
+        # 繪製按鈕文本
+        button_label = "刪除" if self.button_type == 'delete' else "修改"
+        dc.DrawText(button_label, rect.x + 5, rect.y + 5)
+
+    def GetBestSize(self, grid, attr, dc, row, col):
+        return wx.Size(80, 30)  # 按鈕的大小
+
+    def ActivateCell(self, grid, attr, row, col, mouse_event):
+        if self.button_type == 'delete':
+            wx.CallAfter(self.callback, row, 'delete')
+        elif self.button_type == 'edit':
+            wx.CallAfter(self.callback, row, 'edit')
+
+
+class ButtonEditor(wx.grid.GridCellEditor):
+    def __init__(self, button_type, callback, product_name, model_class):
+        super().__init__()
+        self.button_type = button_type
+        self.callback = callback
+        self.grid = None  # 這裡我們將在 Create 方法中設置
+        self.product_name = product_name
+        self.model_class = model_class
+
+    def Create(self, parent, id, evt_handler):
+        super().Create(parent, id, evt_handler)
+        self.button = wx.Button(parent, id, label="刪除" if self.button_type == 'delete' else "修改")
+        self.button.Bind(wx.EVT_BUTTON, self.OnClick)
+        self.SetControl(self.button)
+
+    def SetSize(self, rect):
+        self.button.SetSize(rect)
+
+    def OnClick(self, event):
+        wx.CallAfter(self.callback, self.product_name, self.button_type, self.model_class)
+
+    def EndEdit(self, row, col, grid):
+        # 在這裡可以添加其他邏輯，例如更新單元格
+        pass
+
+    def BeginEdit(self, row, col, grid):
+        self.grid = grid  # 在開始編輯時設置 grid
+
+    def IsAcceptedKey(self, event):
+        return False
+
+
+
+
 # 搜尋視窗
 class search_funtion(wx.ScrolledWindow):
     def __init__(self, parent):
@@ -1128,20 +1191,65 @@ class search_funtion(wx.ScrolledWindow):
                 row.append(value)
             data.append(row)
 
-        grid.CreateGrid(len(data), len(chi_headers))
+        grid.CreateGrid(len(data), len(chi_headers)+2)
 
         # 欄位名稱
         for col, column_name in enumerate(chi_headers):
             grid.SetColLabelValue(col, column_name)
+        grid.SetColLabelValue(len(chi_headers), "刪除")
+        grid.SetColLabelValue(len(chi_headers)+1, "修改")
 
         # 資料鋪陳
         for row_index, row_data in enumerate(data):
+            print(row_index,row_data)
             for col_index, cell_data in enumerate(row_data):
+                print(col_index,cell_data)
                 grid.SetCellValue(row_index, col_index, str(cell_data))
+
+            # 添加刪除和修改按鈕
+            grid.SetCellRenderer(row_index, len(chi_headers), ButtonRenderer('delete', grid, self.on_button_click))
+            grid.SetCellRenderer(row_index, len(chi_headers) + 1, ButtonRenderer('edit', grid, self.on_button_click))
+            grid.SetCellEditor(row_index, len(chi_headers), ButtonEditor('delete', self.on_button_click, row_data[0], model_class))
+            grid.SetCellEditor(row_index, len(chi_headers) + 1, ButtonEditor('edit', self.on_button_click, row_data[0], model_class ))
+
 
         grid.Fit()
         table_sizer.Add(grid, 0, wx.EXPAND | wx.ALL, 10)
         panel.SetSizer(table_sizer)
+
+
+    def on_button_click(self, product_name, button_type, model_class):
+        if button_type == 'delete':
+            self.click_delete(product_name, model_class)
+        elif button_type == 'edit':
+            self.click_edit(product_name, model_class)
+
+
+    def click_delete(self, product_name, model_class):
+        # 刪除行的操作
+        print(f"刪除行 {product_name}")
+        print(f"資料庫名稱{model_class}")
+        # 在這裡添加實際的刪除邏輯
+        if model_class == ServoMotor:
+            dialog = DeleteDialog(self, "刪除資料", product_name, model_class, refresh_callback=self.refresh_servo)
+            print("是的，是伺服馬達")
+        else:
+            dialog = DeleteDialog(self, "刪除資料", product_name, model_class, refresh_callback=self.refresh_spindle)
+        dialog.ShowModal()
+        dialog.Destroy()
+
+
+    def click_edit(self, product_name, model_class):
+        # 編輯行的操作
+        print(f"編輯行 {product_name}")
+        print(f"資料庫名稱{model_class}")
+        # 在這裡添加實際的編輯邏輯
+        if model_class == ServoMotor:
+            dialog = ModifyDialog(self, "修改資料", product_name, model_class, refresh_callback=self.refresh_servo)
+        else:
+            dialog = ModifyDialog(self, "修改資料", product_name, model_class, refresh_callback=self.refresh_spindle)
+        dialog.ShowModal()
+        dialog.Destroy()
 
 
     def get_model_name(self,model):
@@ -1180,6 +1288,7 @@ class search_funtion(wx.ScrolledWindow):
         dialog.ShowModal()
         dialog.Destroy()
 
+
     # 刷新伺服馬達頁面
     def refresh_servo(self):
         for page_index in range(self.notebook.GetPageCount()):
@@ -1188,6 +1297,7 @@ class search_funtion(wx.ScrolledWindow):
                 self.add_sheet(self.notebook, session, ServoMotor, "伺服馬達")
                 break
 
+
     # 刷新主軸馬達頁面
     def refresh_spindle(self):
         for page_index in range(self.notebook.GetPageCount()):
@@ -1195,3 +1305,5 @@ class search_funtion(wx.ScrolledWindow):
                 self.notebook.RemovePage(page_index)
                 self.add_sheet(self.notebook, session, SpindleMotor, "主軸馬達")
                 break
+
+
