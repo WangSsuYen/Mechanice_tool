@@ -1136,7 +1136,6 @@ class search_funtion(wx.ScrolledWindow):
         # 設定GIF自動撥放
         gif_ctrl.Play()
         sizer.Add(gif_ctrl, 0, wx.ALIGN_CENTER | wx.ALL, 10)
-
         # 搜尋介面
         search_sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.search_box = wx.TextCtrl(self, style=wx.TE_PROCESS_ENTER, size=(300,50))
@@ -1153,15 +1152,12 @@ class search_funtion(wx.ScrolledWindow):
         magnifier_button.Bind(wx.EVT_BUTTON, self.Judgmental)
         search_sizer.Add(magnifier_button, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 10)
         sizer.Add(search_sizer, 0, wx.ALIGN_CENTER|wx.ALL, 10)
-
         # 欄位介面
         self.notebook = wx.Notebook(self)
         sizer.Add(self.notebook, 1, wx.ALIGN_CENTER | wx.ALL, 10)
         # 添加不同的 Sheet
         self.add_sheet(self.notebook, session, SpindleMotor, "主軸馬達")
         self.add_sheet(self.notebook, session, ServoMotor, "伺服馬達")
-
-
         # 設置滾動區域
         self.SetScrollbars(50, 50, 50, 50)  # 設置捲動條，(水平步長, 垂直步長, 水平範圍, 垂直範圍)
         self.SetScrollRate(20, 20)  # 設置滾動速率
@@ -1188,6 +1184,7 @@ class search_funtion(wx.ScrolledWindow):
                 row.append(value)
             data.append(row)
 
+        # 創建欄位
         grid.CreateGrid(len(data), len(chi_headers)+2)
 
         # 欄位名稱
@@ -1221,9 +1218,6 @@ class search_funtion(wx.ScrolledWindow):
 
 
     def click_delete(self, product_name, model_class):
-        # 刪除行的操作
-        print(f"刪除行 {product_name}")
-        print(f"資料庫名稱{model_class}")
         # 在這裡添加實際的刪除邏輯
         if model_class == ServoMotor:
             dialog = DeleteDialog(self, "刪除資料", product_name, model_class, refresh_callback=self.refresh_servo)
@@ -1234,9 +1228,6 @@ class search_funtion(wx.ScrolledWindow):
 
 
     def click_edit(self, product_name, model_class):
-        # 編輯行的操作
-        print(f"編輯行 {product_name}")
-        print(f"資料庫名稱{model_class}")
         # 在這裡添加實際的編輯邏輯
         if model_class == ServoMotor:
             dialog = ModifyDialog(self, "修改資料", product_name, model_class, refresh_callback=self.refresh_servo)

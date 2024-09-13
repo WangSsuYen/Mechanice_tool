@@ -213,10 +213,8 @@ class ModifyDialog(wx.Dialog):
         ordered_data['weight'] = motified_data.weight
         manufacturer = session.query(Manufacturer).filter_by(id=motified_data.manufacturer_id).first() # 抓取製造商名稱
         ordered_data['manufacturer_id'] = manufacturer.manufacturer_name
-
         # 鋪陳資料到 TextCtrl
         self.set_data_to_fields(ordered_data)
-
         # 自定義按鈕
         btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
         modify_button = wx.Button(self, wx.ID_OK, label="修改")
@@ -229,6 +227,7 @@ class ModifyDialog(wx.Dialog):
         # 自動調整視窗大小及位置至中
         self.Fit()
         self.Center()
+
 
     def AddLabeledTextCtrl(self, sizer, label, unit, width, high, field_name):
         box = wx.BoxSizer(wx.HORIZONTAL)
@@ -243,6 +242,7 @@ class ModifyDialog(wx.Dialog):
         box.Add(txt, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
         box.Add(unit_lbl, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
         sizer.Add(box, 0, wx.EXPAND | wx.ALL, 5)
+
 
     # 將資料鋪陳至textctrl
     def set_data_to_fields(self, ordered_data):
@@ -270,6 +270,7 @@ class ModifyDialog(wx.Dialog):
         except Exception as e:
             wx.MessageBox(f'修改失敗: {e}', '錯誤', wx.OK | wx.ICON_ERROR)
 
+
     def get_data(self):
         data = {}
         for field_name, text_ctrl in self.fields.items():
@@ -283,5 +284,4 @@ class ModifyDialog(wx.Dialog):
                 data['manufacturer_id'] = manufacturer.id
             else:
                 raise ManufacturerNotFoundError(f"找不到 '{value}' 廠商")
-        print(data)
         return data
