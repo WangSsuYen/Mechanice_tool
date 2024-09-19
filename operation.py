@@ -1,4 +1,4 @@
-import wx, math, wx.adv, wx.grid
+import wx, math, wx.adv, wx.grid, os, sys
 from mathematical import *
 from model import *
 from dialog_win import *
@@ -13,9 +13,12 @@ class ScrewThrustPanel(wx.ScrolledWindow):
         # 主佈局使用 BoxSizer 管理元件
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(sizer)
+        # 路徑
+        base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
 
         # 添加圖片
-        image = wx.Image('images/ScrewDrive.jpg', wx.BITMAP_TYPE_JPEG)
+        image_path = os.path.join(base_path, 'images', 'ScrewDrive.jpg')
+        image = wx.Image(image_path, wx.BITMAP_TYPE_JPEG)
         image = image.Scale(1200, 450, wx.IMAGE_QUALITY_HIGH)
         bitmap = wx.StaticBitmap(self, -1, wx.Bitmap(image))
         sizer.Add(bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 10)
@@ -46,7 +49,8 @@ class ScrewThrustPanel(wx.ScrolledWindow):
         self.total_power = self.AddLabeledTextCtrl(output_form, "總輸出：", "N", 70, 20, readonly=True)
 
         # 設定按鈕圖案
-        btn_icon = wx.Image("images/submit.png", wx.BITMAP_TYPE_PNG)
+        image_path = os.path.join(base_path, 'images', 'submit.png')
+        btn_icon = wx.Image(image_path, wx.BITMAP_TYPE_PNG)
         btn_icon = btn_icon.Scale(60, 60, wx.IMAGE_QUALITY_HIGH)
         btn_bitmap = wx.Bitmap(btn_icon)
 
@@ -118,6 +122,8 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         # 畫面規劃
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(sizer)
+        # 路徑
+        base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
 
         # Ko負荷補正係數
         # 框
@@ -127,7 +133,8 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         Ko_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
         Ko_bg.GetStaticBox().SetMinSize(fixed_size)
         # 圖片示意
-        Ko_image = wx.Image('images/Ko.png', wx.BITMAP_TYPE_PNG)
+        image_path = os.path.join(base_path, 'images', 'Ko.png')
+        Ko_image = wx.Image(image_path, wx.BITMAP_TYPE_PNG)
         Ko_image = Ko_image.Scale(800, 300, wx.IMAGE_QUALITY_HIGH)
         bitmap = wx.StaticBitmap(self, -1, wx.Bitmap(Ko_image))
         # 加入圖框
@@ -145,7 +152,8 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         Ki_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
         Ki_bg.GetStaticBox().SetMinSize(fixed_size)
         # 圖片示意
-        Ki_image = wx.Image('images/Ki.png', wx.BITMAP_TYPE_PNG)
+        image_path = os.path.join(base_path, 'images', 'Ki.png')
+        Ki_image = wx.Image(image_path, wx.BITMAP_TYPE_PNG)
         Ki_image = Ki_image.Scale(800, 300, wx.IMAGE_QUALITY_HIGH)
         bitmap = wx.StaticBitmap(self, -1, wx.Bitmap(Ki_image))
         # 加入圖框
@@ -163,7 +171,8 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         Ke_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
         Ke_bg.GetStaticBox().SetMinSize(fixed_size)
         # 圖片示意
-        Ke_image = wx.Image('images/Ke.png', wx.BITMAP_TYPE_PNG)
+        image_path = os.path.join(base_path, 'images', 'Ke.png')
+        Ke_image = wx.Image(image_path, wx.BITMAP_TYPE_PNG)
         Ke_image = Ke_image.Scale(800, 300, wx.IMAGE_QUALITY_HIGH)
         bitmap = wx.StaticBitmap(self, -1, wx.Bitmap(Ke_image))
         # 加入圖框
@@ -222,7 +231,8 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         belt_selection_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
         belt_selection_bg.GetStaticBox().SetMinSize(fixed_size)
         # 圖片示意
-        belt_selection_image = wx.Image('images/belt_selection.jpg', wx.BITMAP_TYPE_JPEG)
+        image_path = os.path.join(base_path, 'images', 'belt_selection.jpg')
+        belt_selection_image = wx.Image(image_path, wx.BITMAP_TYPE_JPEG)
         belt_selection_image = belt_selection_image.Scale(800, 300, wx.IMAGE_QUALITY_HIGH)
         bitmap = wx.StaticBitmap(self, -1, wx.Bitmap(belt_selection_image))
         # 加入圖框
@@ -238,7 +248,8 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         Kθ_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
         Kθ_bg.GetStaticBox().SetMinSize(fixed_size)
         # 圖片示意
-        Kθ_image = wx.Image('images/Kθ.jpg', wx.BITMAP_TYPE_JPEG)
+        image_path = os.path.join(base_path, 'images', 'Kθ.jpg')
+        Kθ_image = wx.Image(image_path, wx.BITMAP_TYPE_JPEG)
         Kθ_image = Kθ_image.Scale(800, 300, wx.IMAGE_QUALITY_HIGH)
         bitmap = wx.StaticBitmap(self, -1, wx.Bitmap(Kθ_image))
         # 加入圖框
@@ -255,7 +266,8 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
         Kl_bg.GetStaticBox().SetForegroundColour(wx.Colour(255,106,106))
         Kl_bg.GetStaticBox().SetMinSize(fixed_size)
         # 圖片示意
-        Kl_image = wx.Image('images/Kl.jpg', wx.BITMAP_TYPE_JPEG)
+        image_path = os.path.join(base_path, 'images', 'Kl.jpg')
+        Kl_image = wx.Image(image_path, wx.BITMAP_TYPE_JPEG)
         Kl_image = Kl_image.Scale(300, 800, wx.IMAGE_QUALITY_HIGH)
         bitmap = wx.StaticBitmap(self, -1, wx.Bitmap(Kl_image))
         # 加入圖框
@@ -278,7 +290,8 @@ class fiveV_BeltPanel(wx.ScrolledWindow):
 
 
         # 設定按鈕圖案
-        btn_icon = wx.Image("images/submit.png", wx.BITMAP_TYPE_PNG)
+        image_path = os.path.join(base_path, 'images', 'submit.png')
+        btn_icon = wx.Image(image_path, wx.BITMAP_TYPE_PNG)
         btn_icon = btn_icon.Scale(60, 60, wx.IMAGE_QUALITY_HIGH)
         btn_bitmap = wx.Bitmap(btn_icon)
 
@@ -401,14 +414,18 @@ class bearing_lifespan(wx.ScrolledWindow):
         # 畫面管理器
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(sizer)
+        # 路徑
+        base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
 
         picture_sizer = wx.GridSizer(cols=2, vgap=10, hgap=200)
         # 添加圖片及文字
-        angular_image_with_text = self.AddTextToImage('images/angular_bearing.jpg', '斜角滾珠軸承示意圖')
+        image_path = os.path.join(base_path, 'images', 'angular_bearing.jpg')
+        angular_image_with_text = self.AddTextToImage(image_path, '斜角滾珠軸承示意圖')
         angular_bitmap = wx.StaticBitmap(self, -1, angular_image_with_text)
         picture_sizer.Add(angular_bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 10)
 
-        cylindrical_image_with_text = self.AddTextToImage('images/cylindrical_bearing.png', '滾針軸承示意圖')
+        image_path = os.path.join(base_path, 'images', 'cylindrical_bearing.png')
+        cylindrical_image_with_text = self.AddTextToImage(image_path, '滾針軸承示意圖')
         cylindrical_bitmap = wx.StaticBitmap(self, -1, cylindrical_image_with_text)
         picture_sizer.Add(cylindrical_bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 10)
 
@@ -439,7 +456,8 @@ class bearing_lifespan(wx.ScrolledWindow):
         sizer.Add(output_sizer, 0, wx.ALIGN_CENTER | wx.ALL, 10)
 
         # 設定按鈕圖案
-        btn_icon = wx.Image("images/submit.png", wx.BITMAP_TYPE_PNG)
+        image_path = os.path.join(base_path, 'images', 'submit.png')
+        btn_icon = wx.Image(image_path, wx.BITMAP_TYPE_PNG)
         btn_icon = btn_icon.Scale(60, 60, wx.IMAGE_QUALITY_HIGH)
         btn_bitmap = wx.Bitmap(btn_icon)
 
@@ -570,8 +588,13 @@ class bearing_temp_rise(wx.ScrolledWindow):
         # 畫面管理器
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(sizer)
+        # 路徑
+        base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+
         # 添加圖片及文字
-        angular_image_with_text = self.MergeImage('images/angular_bearing.jpg', 'images/temperature_rise_icon.jpg')
+        image_path1 = os.path.join(base_path,'images','angular_bearing.jpg')
+        image_path2 = os.path.join(base_path,'images','temperature_rise_icon.jpg')
+        angular_image_with_text = self.MergeImage(image_path1, image_path2)
         angular_bitmap = wx.StaticBitmap(self, -1, angular_image_with_text)
         sizer.Add(angular_bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 10)
 
@@ -583,7 +606,8 @@ class bearing_temp_rise(wx.ScrolledWindow):
         input_sizer.GetStaticBox().SetMinSize(fixed_size)
         # 左側圖文
         text_sizer = wx.GridSizer(cols= 3, vgap=10, hgap=20)
-        text_image = wx.Image('images/friction_coefficient.png', wx.BITMAP_TYPE_PNG)
+        image_path = os.path.join(base_path,'images','friction_coefficient.png')
+        text_image = wx.Image(image_path, wx.BITMAP_TYPE_PNG)
         text_image = text_image.Scale(316, 462, wx.IMAGE_QUALITY_HIGH)
         bitmap = wx.StaticBitmap(self, -1, wx.Bitmap(text_image))
         text_sizer.Add(bitmap, 0, wx.ALIGN_CENTER|wx.ALL, 10)
@@ -640,7 +664,8 @@ class bearing_temp_rise(wx.ScrolledWindow):
 
 
         # 設定按鈕圖案
-        btn_icon = wx.Image("images/submit.png", wx.BITMAP_TYPE_PNG)
+        image_path = os.path.join(base_path,'images','submit.png')
+        btn_icon = wx.Image(image_path, wx.BITMAP_TYPE_PNG)
         btn_icon = btn_icon.Scale(60, 60, wx.IMAGE_QUALITY_HIGH)
         btn_bitmap = wx.Bitmap(btn_icon)
 
@@ -797,9 +822,11 @@ class angular_bearing_pressure(wx.ScrolledWindow):
         # 畫面管理器
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(sizer)
+        base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
 
         # 載入GIF
-        animation = wx.adv.Animation('images/navbar.gif')
+        gif_path = os.path.join(base_path,'images','navbar.gif')
+        animation = wx.adv.Animation(gif_path)
         gif_ctrl = wx.adv.AnimationCtrl(self, -1, animation)
         # 設定GIF自動撥放
         gif_ctrl.Play()
@@ -825,7 +852,8 @@ class angular_bearing_pressure(wx.ScrolledWindow):
         position_and_speed_bg.GetStaticBox().SetMinSize(fixed_size)
         position_and_speed_sizer = wx.GridSizer(cols=2, vgap=20, hgap=150)
         # 圖片示意
-        position_and_speed_image = wx.Image('images/Positioning_preload_and_speed_coefficient.png', wx.BITMAP_TYPE_PNG)
+        iamge_path = os.path.join(base_path,'images','Positioning_preload_and_speed_coefficient.png')
+        position_and_speed_image = wx.Image(iamge_path, wx.BITMAP_TYPE_PNG)
         position_and_speed_image = position_and_speed_image.Scale(461, 176, wx.IMAGE_QUALITY_HIGH)
         bitmap = wx.StaticBitmap(self, -1, wx.Bitmap(position_and_speed_image))
         position_and_speed_sizer.Add(bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 10)
@@ -847,7 +875,8 @@ class angular_bearing_pressure(wx.ScrolledWindow):
         preload_bg.GetStaticBox().SetMinSize(fixed_size)
         preload_sizer = wx.GridSizer(cols=2, vgap=20, hgap=150)
         # 圖片
-        preload_image = wx.Image('images/preload_coefficient.jpg', wx.BITMAP_TYPE_JPEG)
+        iamge_path = os.path.join(base_path,'images','preload_coefficient.jpg')
+        preload_image = wx.Image(iamge_path, wx.BITMAP_TYPE_JPEG)
         preload_image = preload_image.Scale(461, 164, wx.IMAGE_QUALITY_HIGH)
         bitmap = wx.StaticBitmap(self, -1, wx.Bitmap(preload_image))
         preload_sizer.Add(bitmap, 0, wx.ALIGN_CENTER | wx.ALL, 10)
@@ -915,7 +944,8 @@ class angular_bearing_pressure(wx.ScrolledWindow):
 
 
         # 設定按鈕圖案
-        btn_icon = wx.Image("images/submit.png", wx.BITMAP_TYPE_PNG)
+        iamge_path = os.path.join(base_path,'images','submit.png')
+        btn_icon = wx.Image(iamge_path, wx.BITMAP_TYPE_PNG)
         btn_icon = btn_icon.Scale(60, 60, wx.IMAGE_QUALITY_HIGH)
         btn_bitmap = wx.Bitmap(btn_icon)
 
@@ -1130,8 +1160,11 @@ class search_funtion(wx.ScrolledWindow):
         # 畫面管理器
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(sizer)
+        # 圖片路徑
+        base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
         # 載入GIF
-        animation = wx.adv.Animation('images/you_right.gif')
+        image_path = os.path.join(base_path,'images','you_right.gif')
+        animation = wx.adv.Animation(image_path)
         gif_ctrl = wx.adv.AnimationCtrl(self, -1, animation)
         # 設定GIF自動撥放
         gif_ctrl.Play()
@@ -1145,7 +1178,8 @@ class search_funtion(wx.ScrolledWindow):
         self.search_box.Bind(wx.EVT_TEXT_ENTER, self.Judgmental)
         search_sizer.Add(self.search_box, 0, wx.ALIGN_CENTER | wx.ALL, 10)
         # 搜尋圖面
-        image = wx.Image("images/magnifier.png", wx.BITMAP_TYPE_PNG)
+        image_path = os.path.join(base_path,'images','magnifier.png')
+        image = wx.Image(image_path, wx.BITMAP_TYPE_PNG)
         resized_image = image.Scale(48, 48, wx.IMAGE_QUALITY_HIGH)
         magnifier_bitmap = wx.Bitmap(resized_image)
         magnifier_button = wx.BitmapButton(self, bitmap=magnifier_bitmap)

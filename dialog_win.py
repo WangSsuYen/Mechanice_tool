@@ -1,4 +1,4 @@
-import wx
+import wx, os, sys
 from model import *
 from collections import OrderedDict
 
@@ -130,9 +130,12 @@ class DeleteDialog(wx.Dialog):
     def init_ui(self):
         dialog_sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(dialog_sizer)
+        # 圖片路徑
+        base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
 
         # 圖片
-        delete_image = wx.Image('images/you_sure.jpg', wx.BITMAP_TYPE_JPEG)
+        iamge_path = os.path.join(base_path,'images','you_sure.jpg')
+        delete_image = wx.Image(iamge_path, wx.BITMAP_TYPE_JPEG)
         delete_image = delete_image.Scale(600, 393, wx.IMAGE_QUALITY_HIGH)
         delete_bitmap = wx.StaticBitmap(self, -1, wx.Bitmap(delete_image))
         dialog_sizer.Add(delete_bitmap, 0, wx.ALL | wx.CENTER, 10)
